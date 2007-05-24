@@ -30,7 +30,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	private static final JavaClass PERSISTANCE_ID = new JavaClass(PERSISTANCE_PACKAGE, "Id");
 	private static final JavaClass PERSISTANCE_INHERITANCE = new JavaClass(PERSISTANCE_PACKAGE, "Inheritance");
 	private static final JavaClass PERSISTANCE_INHERITANCE_TYPE = new JavaClass(PERSISTANCE_PACKAGE, "InheritanceType");
-//	private static final JavaClass PERSISTANCE_MAPPED_SUPERCLASS = new JavaClass(PERSISTANCE_PACKAGE, "MappedSuperclass");
+	private static final JavaClass PERSISTANCE_MAPPED_SUPERCLASS = new JavaClass(PERSISTANCE_PACKAGE, "MappedSuperclass");
 	private static final JavaClass PERSISTANCE_ONE_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "OneToMany");
 	private static final JavaClass PERSISTANCE_ONE_TO_ONE = new JavaClass(PERSISTANCE_PACKAGE, "OneToOne");
 	private static final JavaClass PERSISTANCE_MANY_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "ManyToMany");
@@ -120,14 +120,27 @@ public class HibernateClassGenerator extends ClassGenerator {
 	}
 	
 	private void addDomainAnnotations(UmlModel model, UmlClass modelClass, JavaClass clazz) {
+		if(isNotRootParent(model, modelClass)) {
+			clazz.addAnnotation(PERSISTANCE_MAPPED_SUPERCLASS);
+			return;
+		}
+		
 		addDomainAnnotations(clazz);
 		
-		if(! model.findPerentGeneralizations(modelClass).isEmpty()) {
+		if(isParent(model, modelClass)) {
 			clazz.addImport(PERSISTANCE_INHERITANCE_TYPE);
 			clazz.addAnnotation(PERSISTANCE_INHERITANCE, "strategy=InheritanceType.JOINED");
 		}
 	}
+	
+	private boolean isParent(UmlModel model, UmlClass modelClass) {
+		return ! model.findPerentGeneralizations(modelClass).isEmpty();
+	}
 
+	private boolean isNotRootParent(UmlModel model, UmlClass modelClass) {
+		return isParent(model, modelClass) && modelClass.getParent() != null;
+	}
+	
 	private void addDomainAnnotations(JavaClass clazz) {
 		String mappingName = NamingUtils.toTableName(clazz.getName());
 		
