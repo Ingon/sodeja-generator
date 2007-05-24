@@ -28,6 +28,9 @@ public class HibernateClassGenerator extends ClassGenerator {
 	private static final JavaClass PERSISTANCE_GENERATED_VALUE = new JavaClass(PERSISTANCE_PACKAGE, "GeneratedValue");
 	private static final JavaClass PERSISTANCE_GENERATION_TYPE = new JavaClass(PERSISTANCE_PACKAGE, "GenerationType");
 	private static final JavaClass PERSISTANCE_ID = new JavaClass(PERSISTANCE_PACKAGE, "Id");
+	private static final JavaClass PERSISTANCE_INHERITANCE = new JavaClass(PERSISTANCE_PACKAGE, "Inheritance");
+	private static final JavaClass PERSISTANCE_INHERITANCE_TYPE = new JavaClass(PERSISTANCE_PACKAGE, "InheritanceType");
+//	private static final JavaClass PERSISTANCE_MAPPED_SUPERCLASS = new JavaClass(PERSISTANCE_PACKAGE, "MappedSuperclass");
 	private static final JavaClass PERSISTANCE_ONE_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "OneToMany");
 	private static final JavaClass PERSISTANCE_ONE_TO_ONE = new JavaClass(PERSISTANCE_PACKAGE, "OneToOne");
 	private static final JavaClass PERSISTANCE_MANY_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "ManyToMany");
@@ -46,7 +49,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 		if(GeneratorUtils.isEmbedded(modelClass)) {
 			addEmbeddedAnnotations(clazz);
 		} else {
-			addDomainAnnotations(clazz);
+			addDomainAnnotations(model, modelClass, clazz);
 		}
 		return clazz;
 	}
@@ -116,6 +119,15 @@ public class HibernateClassGenerator extends ClassGenerator {
 		clazz.addAnnotation(HIBERNATE_ACCESS_TYPE, "\"field\"");
 	}
 	
+	private void addDomainAnnotations(UmlModel model, UmlClass modelClass, JavaClass clazz) {
+		addDomainAnnotations(clazz);
+		
+		if(! model.findPerentGeneralizations(modelClass).isEmpty()) {
+			clazz.addImport(PERSISTANCE_INHERITANCE_TYPE);
+			clazz.addAnnotation(PERSISTANCE_INHERITANCE, "strategy=InheritanceType.JOINED");
+		}
+	}
+
 	private void addDomainAnnotations(JavaClass clazz) {
 		String mappingName = NamingUtils.toTableName(clazz.getName());
 		
