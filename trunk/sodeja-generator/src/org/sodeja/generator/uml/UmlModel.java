@@ -75,4 +75,14 @@ public class UmlModel extends UmlElement {
 		}
 		return result;
 	}
+	
+	public List<UmlGeneralization> findPerentGeneralizations(UmlClass clazz) {
+		List<UmlGeneralization> result = new ArrayList<UmlGeneralization>();
+		for(UmlGeneralization generalization : generatlizations) {
+			if(clazz.isReferent(generalization.getParent())) {
+				result.add(generalization);
+			}
+		}
+		return result;
+	}
 }

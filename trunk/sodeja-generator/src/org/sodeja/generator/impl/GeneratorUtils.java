@@ -67,7 +67,7 @@ public class GeneratorUtils {
 	public static boolean isDao(UmlOperation modelOperation) {
 		return isSet(modelOperation, "dao");
 	}
-	
+
 	public static boolean isChild(UmlClass modelClass) {
 		if(modelClass.getParent() == null) {
 			return false;
