@@ -10,6 +10,7 @@ import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
+import org.sodeja.generator.uml.UmlType;
 
 public class HibernateClassGenerator extends ClassGenerator {
 	
@@ -62,7 +63,19 @@ public class HibernateClassGenerator extends ClassGenerator {
 	@Override
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlAttribute attribute) {
 		JavaField field = super.createField(domainClass, model, attribute);
-		field.addAnnotation(PERSISTANCE_BASIC);
+		
+		UmlType otherType = attribute.getType().getReferent();
+		if(otherType instanceof UmlClass) {
+			UmlClass otherClass = (UmlClass) otherType;
+			if(GeneratorUtils.isEmbedded(otherClass)) { 
+				field.addAnnotation(PERSISTANCE_EMBEDDED);
+			} else {
+				field.addAnnotation(PERSISTANCE_BASIC);
+			}
+		} else {
+			field.addAnnotation(PERSISTANCE_BASIC);
+		}
+		
 		return field;
 	}
 
