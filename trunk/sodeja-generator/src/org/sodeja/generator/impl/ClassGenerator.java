@@ -10,7 +10,6 @@ import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameter;
 import org.sodeja.generator.java.JavaType;
-import org.sodeja.generator.uml.UmlAggregationType;
 import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
@@ -117,16 +116,15 @@ public class ClassGenerator extends SimpleDomainGenerator {
 	}
 
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlClass modelClass, UmlAssociation modelAssociation) {
-		UmlAssociationEnd thisEnd = modelAssociation.getThisEnd(modelClass);
 		UmlAssociationEnd otherEnd = modelAssociation.getOtherEnd(modelClass);
 		UmlClass otherModelClass = otherEnd.getReferent().getReferent();
 		
-		if(thisEnd.getType() == UmlAggregationType.NONE) {
+		if(! otherEnd.isNavigateale()) {
 			return null;
 		}
 		
 		JavaType type = createType(otherEnd, otherModelClass);
-		return new JavaField(type, modelAssociation.getName());
+		return new JavaField(type, otherEnd.getName());
 	}
 	
 	protected void createOperations(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
