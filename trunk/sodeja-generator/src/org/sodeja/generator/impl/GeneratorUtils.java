@@ -78,7 +78,7 @@ public class GeneratorUtils {
 	private static boolean isDomainObject(UmlClass modelClass) {
 		return modelClass.getStereotype().getReferent().getName().equals(SimpleDomainGenerator.DOMAIN_STEREOTYPE);
 	}
-
+	
 	public static boolean isSet(UmlTaggableElement taggable, String tagName) {
 		for(UmlTagValue tagValue : taggable.getTags()) {
 			UmlTagDefinition tag = tagValue.getTag().getReferent();
@@ -87,5 +87,15 @@ public class GeneratorUtils {
 			}
 		}
 		return false;
+	}
+
+	protected static String getSetValue(UmlTaggableElement taggable, String tagName) {
+		for(UmlTagValue tagValue : taggable.getTags()) {
+			UmlTagDefinition tag = tagValue.getTag().getReferent();
+			if(tag.getName().equals(tagName)) {
+				return tagValue.getValue();
+			}
+		}
+		return null;
 	}
 }

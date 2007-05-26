@@ -7,6 +7,7 @@ public class UmlOperation extends UmlElement implements UmlTaggableElement {
 	private UmlParameter result;
 	private List<UmlParameter> parameters;
 	
+	private UmlOwnerScope scope;
 	private List<UmlTagValue> tags;
 	
 	public UmlOperation() {
@@ -28,5 +29,13 @@ public class UmlOperation extends UmlElement implements UmlTaggableElement {
 	
 	public List<UmlTagValue> getTags() {
 		return tags;
+	}
+
+	public UmlOwnerScope getScope() {
+		return scope;
+	}
+
+	public void setScope(UmlOwnerScope scope) {
+		this.scope = scope;
 	}
 }

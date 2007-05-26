@@ -23,11 +23,12 @@ import org.sodeja.generator.uml.UmlOrdering;
 
 public class ClassGenerator extends SimpleDomainGenerator {
 	
-	private static final JavaClass VOID_CLASS = new JavaClass(null, "void");
+	protected static final JavaClass VOID_CLASS = new JavaClass(null, "void");
 	
-	private static final JavaPackage UTIL_PACKAGE = JavaPackage.createFromDots("java.util");
-	private static final JavaClass LIST_CLASS = new JavaClass(UTIL_PACKAGE, "List");
-	private static final JavaClass SET_CLASS = new JavaClass(UTIL_PACKAGE, "Set");
+	protected static final JavaPackage UTIL_PACKAGE = JavaPackage.createFromDots("java.util");
+	protected static final JavaClass COLLECTION_CLASS = new JavaClass(UTIL_PACKAGE, "Collection");
+	protected static final JavaClass LIST_CLASS = new JavaClass(UTIL_PACKAGE, "List");
+	protected static final JavaClass SET_CLASS = new JavaClass(UTIL_PACKAGE, "Set");
 	
 	@Override
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {
@@ -130,12 +131,10 @@ public class ClassGenerator extends SimpleDomainGenerator {
 	
 	protected void createOperations(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
 		for(UmlOperation modelOperation : modelClass.getOperations()) {
-			if(GeneratorUtils.isDao(modelOperation)) {
-				continue;
-			}
-			
 			JavaMethod method = createMethod(domainClass, model, modelOperation);
-			domainClass.addMethod(method);
+			if(method != null) {
+				domainClass.addMethod(method);
+			}
 		}
 	}
 

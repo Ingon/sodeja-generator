@@ -31,6 +31,8 @@ public class UmlReference<T extends UmlElement> {
 			cached = findById(model.getTypes(), id);
 		} else if(clazz == UmlClass.class) {
 			cached = findById(model.getClasses(), id);
+		} else if(clazz == UmlInterface.class) {
+			cached = findById(model.getInterfaces(), id);
 		} else {
 			throw new UnsupportedOperationException();
 		}

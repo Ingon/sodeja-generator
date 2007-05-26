@@ -9,12 +9,14 @@ public class UmlPackage extends UmlElement {
 	
 	private List<UmlPackage> subpackages;
 	private List<UmlClass> classes;
+	private List<UmlInterface> interfaces;
 	
 	public UmlPackage(UmlElement parent) {
 		this.parent = parent;
 		
 		this.subpackages = new ArrayList<UmlPackage>();
 		this.classes = new ArrayList<UmlClass>();
+		this.interfaces = new ArrayList<UmlInterface>();
 	}
 	
 	public List<UmlClass> getClasses() {
@@ -49,5 +51,14 @@ public class UmlPackage extends UmlElement {
 			return (UmlModel) parent;
 		}
 		return ((UmlPackage) parent).getRoot();
+	}
+
+	public List<UmlInterface> getInterfaces() {
+		return Collections.unmodifiableList(interfaces);
+	}
+	
+	public void addInterface(UmlInterface interfaze) {
+		interfaces.add(interfaze);
+		getRoot().getInterfaces().add(interfaze);
 	}
 }

@@ -6,7 +6,7 @@ public class UmlAssociationEnd extends UmlElement {
 	private UmlOrdering ordering;
 	
 	private UmlMultiplicityRange range;
-	private UmlReference<UmlClass> referent;
+	private UmlReference<? extends UmlClass> referent;
 	
 	public boolean isNavigateale() {
 		return navigateale;
@@ -22,10 +22,10 @@ public class UmlAssociationEnd extends UmlElement {
 		this.range = range;
 	}
 	
-	public UmlReference<UmlClass> getReferent() {
+	public UmlReference<? extends UmlClass> getReferent() {
 		return referent;
 	}
-	public void setReferent(UmlReference<UmlClass> referent) {
+	public void setReferent(UmlReference<? extends UmlClass> referent) {
 		this.referent = referent;
 	}
 	

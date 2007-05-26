@@ -5,6 +5,7 @@ import java.util.List;
 
 public class JavaField implements Annotateable, AccessModifiable {
 	protected JavaAccessModifier accessModifier = JavaAccessModifier.PRIVATE;
+	protected boolean isStatic;
 	protected JavaType type;
 	protected String name;
 	protected List<JavaAnnotation> annotations;
@@ -41,5 +42,13 @@ public class JavaField implements Annotateable, AccessModifiable {
 	
 	public JavaAccessModifier getAccessModifier() {
 		return accessModifier;
+	}
+
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
 	}
 }
