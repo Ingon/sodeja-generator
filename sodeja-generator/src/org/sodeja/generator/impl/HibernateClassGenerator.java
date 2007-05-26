@@ -36,6 +36,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	private static final JavaClass PERSISTANCE_ONE_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "OneToMany");
 	private static final JavaClass PERSISTANCE_ONE_TO_ONE = new JavaClass(PERSISTANCE_PACKAGE, "OneToOne");
 	private static final JavaClass PERSISTANCE_MANY_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "ManyToMany");
+	private static final JavaClass PERSISTANCE_MANY_TO_ONE = new JavaClass(PERSISTANCE_PACKAGE, "ManyToOne");
 	private static final JavaClass PERSISTANCE_SEQUENCE_GENERATOR = new JavaClass(PERSISTANCE_PACKAGE, "SequenceGenerator");
 	private static final JavaClass PERSISTANCE_TABLE = new JavaClass(PERSISTANCE_PACKAGE, "Table");
 	
@@ -91,6 +92,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 			return null;
 		}
 		
+		UmlAssociationEnd thisModelEnd = modelAssociation.getThisEnd(modelClass);
 		UmlAssociationEnd otherModelEnd = modelAssociation.getOtherEnd(modelClass);
 		UmlClass otherModelClass = otherModelEnd.getReferent().getReferent();
 		if(GeneratorUtils.isEmbedded(otherModelClass)) {
@@ -99,7 +101,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 			domainClass.addImport(PERSISTANCE_ENUM_TYPE);
 			field.addAnnotation(PERSISTANCE_ENUMERATED, "EnumType.STRING");
 		} else if(otherModelEnd.getRange().isMulty()) {
-			if(modelAssociation.getThisEnd(modelClass).getType() == UmlAggregationType.COMPOSITE) {
+			if(thisModelEnd.getType() == UmlAggregationType.COMPOSITE) {
 				field.addAnnotation(PERSISTANCE_ONE_TO_MANY);
 				field.addAnnotation(HIBERNATE_INDEX_COLUMN, "name=\"number_in_row\"");
 				field.addAnnotation(HIBERNATE_CASCADE, "value={org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN}");
@@ -107,9 +109,11 @@ public class HibernateClassGenerator extends ClassGenerator {
 				field.addAnnotation(PERSISTANCE_MANY_TO_MANY);
 				field.addAnnotation(HIBERNATE_INDEX_COLUMN, "name=\"number_in_row\"");
 			}
-		} else if(modelAssociation.getThisEnd(modelClass).getType() == UmlAggregationType.COMPOSITE) {
+		} else if(thisModelEnd.getType() == UmlAggregationType.COMPOSITE) {
 			domainClass.addImport(PERSISTANCE_CASCADE_TYPE);
 			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, "cascade=CascadeType.ALL");
+		} else if(thisModelEnd.getRange().isMulty()) {
+			field.addAnnotation(PERSISTANCE_MANY_TO_ONE);
 		} else {
 			field.addAnnotation(PERSISTANCE_ONE_TO_ONE);
 		}
