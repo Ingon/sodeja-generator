@@ -159,7 +159,7 @@ public class DefaultJavaClassWriter {
 	
 	private void writeField(JavaField field, PrintWriter out) {
 		writeAnnotations(field, out);
-		out.format("%s%s %s %s;", getLevelPrefix(), getAccess(field), getTypeText(field.getType()), field.getName());
+		out.format("%s%s%s %s %s;", getLevelPrefix(), getAccess(field), getStatic(field), getTypeText(field.getType()), field.getName());
 		out.println();
 		out.println();
 	}
@@ -183,7 +183,7 @@ public class DefaultJavaClassWriter {
 			return;
 		}
 		
-		out.format("%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getTypeText(method.getType()), 
+		out.format("%s%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), getTypeText(method.getType()), 
 				method.getName(), getParameters(method), getThrows(method));
 		out.println();
 		
@@ -209,7 +209,7 @@ public class DefaultJavaClassWriter {
 		out.println();
 		out.println();
 	}
-	
+
 	private void writeValues(List<String> values, PrintWriter out) {
 		for(Iterator<String> ite = values.iterator();ite.hasNext();) {
 			out.format("%s%s", getLevelPrefix(), ite.next());
@@ -265,6 +265,10 @@ public class DefaultJavaClassWriter {
 		return modifier.name().toLowerCase();
 	}
 	
+	private Object getStatic(JavaField field) {
+		return field.isStatic() ? " static" : "";
+	}
+
 	private String getExtends() {
 		if(clazz.getParent() == null) {
 			return "";

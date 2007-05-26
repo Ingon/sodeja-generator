@@ -21,8 +21,8 @@ public class HibernateDaoGenerator extends SimpleDomainGenerator {
 	private static final JavaClass LONG = new JavaClass(JAVA_LANG_PACKAGE, "Long");
 	
 	private static final JavaPackage PARENT_DAO_PACKAGE = JavaPackage.createFromDots("com.bulbera.commons.dao");
-	private static final JavaClass PARENT_DAO = new JavaInterface(PARENT_DAO_PACKAGE, "GenericDao");
-	private static final JavaClass PARENT_DAO_IMPL = new JavaClass(PARENT_DAO_PACKAGE, "GenericDaoImpl");
+	protected static final JavaClass PARENT_DAO = new JavaInterface(PARENT_DAO_PACKAGE, "GenericDao");
+	protected static final JavaClass PARENT_DAO_IMPL = new JavaClass(PARENT_DAO_PACKAGE, "GenericDaoImpl");
 	
 	@Override
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {

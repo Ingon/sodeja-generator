@@ -2,6 +2,7 @@ package org.sodeja.generator.impl;
 
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaField;
+import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlAggregationType;
@@ -10,6 +11,7 @@ import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
+import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlType;
 
 public class HibernateClassGenerator extends ClassGenerator {
@@ -112,6 +114,15 @@ public class HibernateClassGenerator extends ClassGenerator {
 			field.addAnnotation(PERSISTANCE_ONE_TO_ONE);
 		}
 		return field;
+	}
+
+	@Override
+	protected JavaMethod createMethod(JavaClass domainClass, UmlModel model, UmlOperation modelOperation) {
+		if(GeneratorUtils.isDao(modelOperation)) {
+			return null;
+		}
+		
+		return super.createMethod(domainClass, model, modelOperation);
 	}
 
 	private void addEmbeddedAnnotations(JavaClass clazz) {

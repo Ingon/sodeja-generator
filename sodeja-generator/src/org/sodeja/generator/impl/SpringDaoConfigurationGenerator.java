@@ -55,7 +55,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 	}
 	
 	private void generateDaoParent(SpringConfiguration config) {
-		config.add(new SpringBean(BASE_DAO_NAME, "com.bulbera.testle.dao.GenericDaoImpl"));
+		config.add(new SpringBean(BASE_DAO_NAME, HibernateDaoGenerator.PARENT_DAO.getFullName()));
 		config.current().setAbstract(true);
 		config.current().addReference("sessionFactory", HIBERNATE_SESSION_FACTORY);
 	}
@@ -72,7 +72,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 	
 	private String getDaoName(UmlClass modelClass) {
 		if(! isCustomDao(modelClass)) {
-			return "com.bulbera.testle.dao.GenericDaoImpl";
+			return HibernateDaoGenerator.PARENT_DAO_IMPL.getFullName();
 		}
 		
 		UmlPackage modelRootPackage = modelClass.getParentPackage().getParent();

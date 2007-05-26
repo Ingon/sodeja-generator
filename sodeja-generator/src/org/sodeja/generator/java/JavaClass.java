@@ -112,6 +112,10 @@ public class JavaClass implements Annotateable, AccessModifiable {
 		interfaces.add(inter);
 	}
 	
+	public String getFullName() {
+		return String.format("%s.%s", getPackage().getFullName(), getName());
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if(! (obj instanceof JavaClass)) {

@@ -6,6 +6,8 @@ import java.util.List;
 public class UmlModel extends UmlElement {
 	private List<UmlPackage> packages;
 	private List<UmlClass> classes;
+	private List<UmlInterface> interfaces;
+	
 	private List<UmlDataType> types;
 	private List<UmlTagDefinition> tags;
 	private List<UmlStereotype> stereotypes;
@@ -16,6 +18,8 @@ public class UmlModel extends UmlElement {
 		this.types = new ArrayList<UmlDataType>();
 		this.packages = new ArrayList<UmlPackage>();
 		this.classes = new ArrayList<UmlClass>();
+		this.interfaces = new ArrayList<UmlInterface>();
+		
 		this.tags = new ArrayList<UmlTagDefinition>();
 		this.stereotypes = new ArrayList<UmlStereotype>();
 		this.associations = new ArrayList<UmlAssociation>();
@@ -30,6 +34,10 @@ public class UmlModel extends UmlElement {
 		return classes;
 	}
 	
+	protected List<UmlInterface> getInterfaces() {
+		return interfaces;
+	}
+
 	public List<UmlStereotype> getStereotypes() {
 		return stereotypes;
 	}
