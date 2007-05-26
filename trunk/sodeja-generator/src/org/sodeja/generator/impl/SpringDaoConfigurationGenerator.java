@@ -19,7 +19,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 	
 	@Override
 	protected String getConfigFilename() {
-		return "dao-context.xml";
+		return "daoContext.xml";
 	}
 
 	@Override
