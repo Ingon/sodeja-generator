@@ -3,14 +3,8 @@ package org.sodeja.generator;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
-import org.sodeja.generator.impl.HibernateClassGenerator;
-import org.sodeja.generator.impl.HibernateConfigGenerator;
-import org.sodeja.generator.impl.HibernateDaoGenerator;
-import org.sodeja.generator.impl.SpringDaoConfigurationGenerator;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.argouml.XmiParser;
 
@@ -24,21 +18,11 @@ public class GeneratorMain {
 		} else {
 			model = XmiParser.parseZargo(ctx.getModelFile());
 		}
-		for(Generator generator : loadGenerators()) {
+		for(Generator generator : ctx.getGenerators()) {
 			generator.generate(ctx, model);
 		}
 	}
 
-	private static List<Generator> loadGenerators() {
-		List<Generator> result = new ArrayList<Generator>();
-		result.add(new HibernateClassGenerator());
-		result.add(new HibernateConfigGenerator());
-		
-		result.add(new HibernateDaoGenerator());
-		result.add(new SpringDaoConfigurationGenerator());
-		return result;
-	}
-	
 	private static GeneratorContext createContext() throws IOException {
 		GeneratorContext ctx = new GeneratorContext();
 		
@@ -47,6 +31,7 @@ public class GeneratorMain {
 			Properties props = new Properties();
 			props.load(new FileReader(propsFile));
 			
+			ctx.setGenerators(props.getProperty("generator.generators"));
 			ctx.setBaseFolder(props.getProperty("generator.base"));
 			ctx.setModelFile(props.getProperty("generator.model"));
 			ctx.setSourceFolder(props.getProperty("generator.source"));

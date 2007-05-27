@@ -20,7 +20,7 @@ public class HibernateDaoGenerator extends SimpleDomainGenerator {
 	private static final JavaPackage JAVA_LANG_PACKAGE = new JavaPackage("java.lang");
 	private static final JavaClass LONG = new JavaClass(JAVA_LANG_PACKAGE, "Long");
 	
-	private static final JavaPackage PARENT_DAO_PACKAGE = JavaPackage.createFromDots("com.bulbera.commons.dao");
+	private static final JavaPackage PARENT_DAO_PACKAGE = JavaPackage.createFromDots("org.sodeja.hibernate");
 	protected static final JavaClass PARENT_DAO = new JavaInterface(PARENT_DAO_PACKAGE, "GenericDao");
 	protected static final JavaClass PARENT_DAO_IMPL = new JavaClass(PARENT_DAO_PACKAGE, "GenericDaoImpl");
 	
@@ -81,17 +81,25 @@ public class HibernateDaoGenerator extends SimpleDomainGenerator {
 		return result;
 	}
 	
-	private static JavaType createParentType(UmlClass modelClass) {
-		JavaType parent = new JavaType(PARENT_DAO);
+	private JavaType createParentType(UmlClass modelClass) {
+		JavaType parent = new JavaType(getDaoInterface());
 		parent.addParameter(ClassGeneratorUtils.getJavaClass(modelClass));
 		parent.addParameter(LONG);
 		return parent;
 	}
 
-	private static JavaType createParentTypeImpl(UmlClass modelClass) {
-		JavaType parent = new JavaType(PARENT_DAO_IMPL);
+	private JavaType createParentTypeImpl(UmlClass modelClass) {
+		JavaType parent = new JavaType(getDaoImplementation());
 		parent.addParameter(ClassGeneratorUtils.getJavaClass(modelClass));
 		parent.addParameter(LONG);
 		return parent;
+	}
+	
+	protected JavaClass getDaoInterface() {
+		return PARENT_DAO;
+	}
+	
+	protected JavaClass getDaoImplementation() {
+		return PARENT_DAO_IMPL;
 	}
 }
