@@ -97,7 +97,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 		UmlClass otherModelClass = otherModelEnd.getReferent().getReferent();
 		if(GeneratorUtils.isEmbedded(otherModelClass)) {
 			field.addAnnotation(PERSISTANCE_EMBEDDED);
-		} else if(GeneratorUtils.isEnumerated(otherModelClass)) {
+		} else if(GeneratorUtils.isEnum(otherModelClass)) {
 			domainClass.addImport(PERSISTANCE_ENUM_TYPE);
 			field.addAnnotation(PERSISTANCE_ENUMERATED, "EnumType.STRING");
 		} else if(otherModelEnd.getRange().isMulty()) {

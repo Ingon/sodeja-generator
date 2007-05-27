@@ -10,6 +10,7 @@ import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.MergingJavaFile;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlOperation;
+import org.sodeja.generator.uml.UmlParameter;
 import org.sodeja.generator.uml.UmlTagDefinition;
 import org.sodeja.generator.uml.UmlTagValue;
 import org.sodeja.generator.uml.UmlTaggableElement;
@@ -56,10 +57,6 @@ public class GeneratorUtils {
 		return isSet(modelClass, "embedded");
 	}
 	
-	public static boolean isEnumerated(UmlClass modelClass) {
-		return isSet(modelClass, "enum");
-	}
-	
 	public static boolean isCrud(UmlClass modelClass) {
 		return isSet(modelClass, "crud");
 	}
@@ -68,6 +65,10 @@ public class GeneratorUtils {
 		return isSet(modelOperation, "dao");
 	}
 
+	public static String getMulty(UmlParameter modelParameter) {
+		return getSetValue(modelParameter, "multy");
+	}
+	
 	public static boolean isChild(UmlClass modelClass) {
 		if(modelClass.getParent() == null) {
 			return false;
@@ -79,7 +80,7 @@ public class GeneratorUtils {
 		return modelClass.getStereotype().getReferent().getName().equals(SimpleDomainGenerator.DOMAIN_STEREOTYPE);
 	}
 	
-	public static boolean isSet(UmlTaggableElement taggable, String tagName) {
+	protected static boolean isSet(UmlTaggableElement taggable, String tagName) {
 		for(UmlTagValue tagValue : taggable.getTags()) {
 			UmlTagDefinition tag = tagValue.getTag().getReferent();
 			if(tag.getName().equals(tagName) && Boolean.parseBoolean(tagValue.getValue())) {

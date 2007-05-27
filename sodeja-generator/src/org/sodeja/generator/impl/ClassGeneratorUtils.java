@@ -31,7 +31,7 @@ public class ClassGeneratorUtils {
 	protected static JavaType getParameterType(UmlParameter parameter) {
 		JavaClass baseClass = getJavaClass(parameter.getType());
 		
-		String value = GeneratorUtils.getSetValue(parameter, "multy");
+		String value = GeneratorUtils.getMulty(parameter);
 		if(value == null) {
 			return new JavaType(baseClass);
 		}
