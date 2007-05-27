@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.sodeja.generator.GeneratorContext;
+import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlOperation;
@@ -19,7 +20,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 	
 	@Override
 	protected String getConfigFilename() {
-		return "daoContext.xml";
+		return "dao-context.xml";
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 	}
 	
 	private void generateDaoParent(SpringConfiguration config) {
-		config.add(new SpringBean(BASE_DAO_NAME, HibernateDaoGenerator.PARENT_DAO.getFullName()));
+		config.add(new SpringBean(BASE_DAO_NAME, getDaoInterface().getFullName()));
 		config.current().setAbstract(true);
 		config.current().addReference("sessionFactory", HIBERNATE_SESSION_FACTORY);
 	}
@@ -72,7 +73,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 	
 	private String getDaoName(UmlClass modelClass) {
 		if(! isCustomDao(modelClass)) {
-			return HibernateDaoGenerator.PARENT_DAO_IMPL.getFullName();
+			return getDaoImplementation().getFullName();
 		}
 		
 		UmlPackage modelRootPackage = modelClass.getParentPackage().getParent();
@@ -89,5 +90,13 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 			}
 		}
 		return false;
+	}
+	
+	protected JavaClass getDaoInterface() {
+		return HibernateDaoGenerator.PARENT_DAO;
+	}
+	
+	protected JavaClass getDaoImplementation() {
+		return HibernateDaoGenerator.PARENT_DAO_IMPL;
 	}
 }
