@@ -1,0 +1,12 @@
+#summary Basic Generator Documentation
+
+= Introduction =
+
+There are a lot of things that generator is doing. Some of them are not so obvious (like special tags). This document targets to describe them.
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
