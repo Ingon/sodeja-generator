@@ -20,7 +20,7 @@ import org.sodeja.generator.uml.UmlMultiplicityRange;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOrdering;
 
-public class ClassGenerator extends AbstractPerClassGenerator {
+public class ClassGenerator extends AbstractClassGenerator {
 	
 	protected static final JavaClass VOID_CLASS = new JavaClass(null, "void");
 	
@@ -30,10 +30,19 @@ public class ClassGenerator extends AbstractPerClassGenerator {
 	protected static final JavaClass SET_CLASS = new JavaClass(UTIL_PACKAGE, "Set");
 	
 	@Override
+	public void generate(GeneratorContext ctx, UmlModel model) {
+		super.generate(ctx, model);
+		
+		List<UmlClass> modelClasses = model.findClassesByStereotype(getStereotype());
+		for(UmlClass modelClass : modelClasses) {
+			generate(ctx, model, modelClass);
+		}
+	}
+
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {
 		JavaPackage domainPackage = JavaPackage.createFromDots(modelClass.getParentPackage().getFullName());
 		JavaClass domainClass = createClass(domainPackage, model, modelClass);
-		GeneratorUtils.writeClass(ctx, domainClass);
+		writeClass(domainClass);
 	}
 	
 	protected JavaClass createClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {

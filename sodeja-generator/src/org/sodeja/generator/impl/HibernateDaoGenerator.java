@@ -15,7 +15,7 @@ import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlPackage;
 
-public class HibernateDaoGenerator extends AbstractPerClassGenerator {
+public class HibernateDaoGenerator extends AbstractClassGenerator {
 	
 	private static final JavaPackage JAVA_LANG_PACKAGE = new JavaPackage("java.lang");
 	private static final JavaClass LONG = new JavaClass(JAVA_LANG_PACKAGE, "Long");
@@ -25,6 +25,15 @@ public class HibernateDaoGenerator extends AbstractPerClassGenerator {
 	protected static final JavaClass PARENT_DAO_IMPL = new JavaClass(PARENT_DAO_PACKAGE, "GenericDaoImpl");
 	
 	@Override
+	public void generate(GeneratorContext ctx, UmlModel model) {
+		super.generate(ctx, model);
+		
+		List<UmlClass> modelClasses = model.findClassesByStereotype(getStereotype());
+		for(UmlClass modelClass : modelClasses) {
+			generate(ctx, model, modelClass);
+		}
+	}
+
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {
 		if(! GeneratorUtils.isCrud(modelClass)) {
 			return;
@@ -54,7 +63,7 @@ public class HibernateDaoGenerator extends AbstractPerClassGenerator {
 			daoInterface.addMethod(method);
 		}
 		
-		GeneratorUtils.writeClass(ctx, daoInterface);
+		writeClass(daoInterface);
 		return daoInterface;
 	}
 
@@ -68,7 +77,7 @@ public class HibernateDaoGenerator extends AbstractPerClassGenerator {
 			daoClass.addMethod(method);
 		}
 		
-		GeneratorUtils.writeClass(ctx, daoClass);
+		writeClass(daoClass);
 	}
 
 	private List<UmlOperation> getDaoOperations(UmlClass modelClass) {

@@ -32,14 +32,4 @@ public class HibernateConfigGenerator extends ConfigurationFileDomainGenerator {
 		writer.append("    </session-factory>\r\n");
 		writer.append("</hibernate-configuration>\r\n");
 	}
-
-	@Override
-	protected String getConfigFilename() {
-		return "hibernate.cfg.xml";
-	}
-
-	@Override
-	protected String getConfigSubfolder() {
-		return "hibernate";
-	}
 }

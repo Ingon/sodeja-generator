@@ -7,11 +7,11 @@ import org.sodeja.generator.GeneratorContext;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
 
-public abstract class ConfigurationFileDomainGenerator extends ConfigurationGenerator {
+public abstract class ConfigurationFileDomainGenerator extends AbstractConfigurationGenerator {
 	public void generate(GeneratorContext ctx, UmlModel model) {
 		List<UmlClass> modelClasses = model.findClassesByStereotype(getStereotype());
 		try {
-			PrintWriter writer = new PrintWriter(getFileWriter(ctx));
+			PrintWriter writer = new PrintWriter(getFileWriter());
 			generateBegin(ctx, writer, model);
 			
 			for(UmlClass modelClass : modelClasses) {
