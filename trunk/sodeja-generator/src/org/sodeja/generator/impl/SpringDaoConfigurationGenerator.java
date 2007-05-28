@@ -12,26 +12,16 @@ import org.sodeja.generator.uml.UmlPackage;
 import org.sodeja.generator.xml.spring.SpringBean;
 import org.sodeja.generator.xml.spring.SpringConfiguration;
 
-public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
+public class SpringDaoConfigurationGenerator extends AbstractConfigurationGenerator {
 
 	private static final SpringBean HIBERNATE_SESSION_FACTORY = new SpringBean("hibernateSessionFactory", null);
 	
 	private static final String BASE_DAO_NAME = "baseDao";
-	
-	@Override
-	protected String getConfigFilename() {
-		return "dao-context.xml";
-	}
-
-	@Override
-	protected String getConfigSubfolder() {
-		return "spring";
-	}
 
 	@Override
 	public void generate(GeneratorContext ctx, UmlModel model) {
 		try {
-			PrintWriter writer = new PrintWriter(getFileWriter(ctx));
+			PrintWriter writer = new PrintWriter(getFileWriter());
 			SpringConfiguration config = generateConfiguration(ctx, model);
 			config.write(writer);
 			writer.close();
