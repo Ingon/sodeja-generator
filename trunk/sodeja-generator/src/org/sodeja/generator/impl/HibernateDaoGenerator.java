@@ -15,7 +15,7 @@ import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlPackage;
 
-public class HibernateDaoGenerator extends SimpleDomainGenerator {
+public class HibernateDaoGenerator extends AbstractPerClassGenerator {
 	
 	private static final JavaPackage JAVA_LANG_PACKAGE = new JavaPackage("java.lang");
 	private static final JavaClass LONG = new JavaClass(JAVA_LANG_PACKAGE, "Long");

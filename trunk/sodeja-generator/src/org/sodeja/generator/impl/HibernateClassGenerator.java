@@ -59,7 +59,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	
 	@Override
 	protected void createAttributes(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
-		if(! GeneratorUtils.isEmbedded(modelClass) && ! GeneratorUtils.isChild(modelClass)) {
+		if(! GeneratorUtils.isEmbedded(modelClass) && ! GeneratorUtils.isChild(modelClass, getStereotype())) {
 			addDomainId(domainClass);
 		}
 		

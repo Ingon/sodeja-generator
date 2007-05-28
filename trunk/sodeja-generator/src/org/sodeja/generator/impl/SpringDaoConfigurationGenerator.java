@@ -44,7 +44,7 @@ public class SpringDaoConfigurationGenerator extends ConfigurationGenerator {
 		SpringConfiguration config = new SpringConfiguration();
 		generateDaoParent(config);
 		
-		List<UmlClass> modelClasses = model.findClassesByStereotype(SimpleDomainGenerator.DOMAIN_STEREOTYPE);
+		List<UmlClass> modelClasses = model.findClassesByStereotype(getStereotype());
 		for(UmlClass modelClass : modelClasses) {
 			if(! GeneratorUtils.isCrud(modelClass)) {
 				continue;

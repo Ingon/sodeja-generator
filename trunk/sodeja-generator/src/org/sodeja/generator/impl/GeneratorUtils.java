@@ -69,15 +69,15 @@ public class GeneratorUtils {
 		return getSetValue(modelParameter, "multy");
 	}
 	
-	public static boolean isChild(UmlClass modelClass) {
+	public static boolean isChild(UmlClass modelClass, String stereotype) {
 		if(modelClass.getParent() == null) {
 			return false;
 		}
-		return isDomainObject(modelClass.getParent().getReferent().getParent().getReferent());
+		return isDomainObject(modelClass.getParent().getReferent().getParent().getReferent(), stereotype);
 	}
 	
-	private static boolean isDomainObject(UmlClass modelClass) {
-		return modelClass.getStereotype().getReferent().getName().equals(SimpleDomainGenerator.DOMAIN_STEREOTYPE);
+	private static boolean isDomainObject(UmlClass modelClass, String stereotype) {
+		return modelClass.getStereotype().getReferent().getName().equals(stereotype);
 	}
 	
 	protected static boolean isSet(UmlTaggableElement taggable, String tagName) {

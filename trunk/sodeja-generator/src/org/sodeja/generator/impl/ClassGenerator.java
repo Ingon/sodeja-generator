@@ -20,7 +20,7 @@ import org.sodeja.generator.uml.UmlMultiplicityRange;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOrdering;
 
-public class ClassGenerator extends SimpleDomainGenerator {
+public class ClassGenerator extends AbstractPerClassGenerator {
 	
 	protected static final JavaClass VOID_CLASS = new JavaClass(null, "void");
 	
