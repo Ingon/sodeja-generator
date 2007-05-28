@@ -1,4 +1,4 @@
-#summary Basic Generator Documentation
+#summary Basic Generator Documentation (v 0.1)
 
 = Introduction =
 
