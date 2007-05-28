@@ -9,7 +9,7 @@ import org.sodeja.generator.uml.UmlModel;
 
 public abstract class ConfigurationFileDomainGenerator extends ConfigurationGenerator {
 	public void generate(GeneratorContext ctx, UmlModel model) {
-		List<UmlClass> modelClasses = model.findClassesByStereotype(SimpleDomainGenerator.DOMAIN_STEREOTYPE);
+		List<UmlClass> modelClasses = model.findClassesByStereotype(getStereotype());
 		try {
 			PrintWriter writer = new PrintWriter(getFileWriter(ctx));
 			generateBegin(ctx, writer, model);

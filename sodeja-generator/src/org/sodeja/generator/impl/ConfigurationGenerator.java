@@ -5,10 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.sodeja.generator.Generator;
 import org.sodeja.generator.GeneratorContext;
 
-public abstract class ConfigurationGenerator implements Generator {
+public abstract class ConfigurationGenerator extends AbstractGenerator {
 	protected abstract String getConfigFilename();
 	
 	protected abstract String getConfigSubfolder();
