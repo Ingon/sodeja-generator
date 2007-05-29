@@ -19,6 +19,7 @@ public abstract class UmlNamespace extends UmlElement {
 	protected List<UmlAssociation> associations;
 	protected List<UmlGeneralization> generatlizations;
 	protected List<UmlDependency> dependencies;
+	protected List<UmlAbstraction> abstractions;
 	
 	public UmlNamespace(UmlNamespace parent) {
 		this.parent = parent;
@@ -34,6 +35,7 @@ public abstract class UmlNamespace extends UmlElement {
 		this.associations = new ArrayList<UmlAssociation>();
 		this.generatlizations = new ArrayList<UmlGeneralization>();
 		this.dependencies = new ArrayList<UmlDependency>();
+		this.abstractions = new ArrayList<UmlAbstraction>();
 	}
 
 	public UmlNamespace getParent() {
@@ -80,6 +82,10 @@ public abstract class UmlNamespace extends UmlElement {
 		return dependencies;
 	}
 	
+	public List<UmlAbstraction> getAbstractions() {
+		return abstractions;
+	}
+
 	public abstract String getFullName();
 	
 	public List<UmlClass> findClassesByStereotype(String name) {

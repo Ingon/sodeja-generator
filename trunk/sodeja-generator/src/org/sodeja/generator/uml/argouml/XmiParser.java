@@ -56,7 +56,7 @@ public class XmiParser extends DefaultHandler {
 	private StringBuilder content = new StringBuilder();
 	
 	private Deque<UmlElement> stack = new LinkedList<UmlElement>();
-	private Deque<String> debugStack = new LinkedList<String>();
+	private Deque<String> tagStack = new LinkedList<String>();
 	
 	private UmlElement result;
 	
@@ -88,11 +88,13 @@ public class XmiParser extends DefaultHandler {
 		
 		mapping.put("UML:Generalization", new UmlGeneralizationParserStrategy());
 		mapping.put("UML:Dependency", new UmlDependencyParserStrategy());
+		mapping.put("UML:Permission", new UmlDependencyParserStrategy());
+		mapping.put("UML:Usage", new UmlDependencyParserStrategy());
 	}
 	
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		debugStack.push(qName);
+		tagStack.push(qName);
 		XmiParserStrategy strategy = mapping.get(qName);
 		if(strategy == null) {
 			return;
@@ -113,7 +115,7 @@ public class XmiParser extends DefaultHandler {
 			return;
 		}
 		strategy.end(this, content.toString());
-		debugStack.pop();
+		tagStack.pop();
 	}
 
 	protected void push(UmlElement element) {
@@ -136,10 +138,14 @@ public class XmiParser extends DefaultHandler {
 	}
 	
 	protected String getParentTagName() {
-		String head = debugStack.pop();
-		String parent = debugStack.peek();
-		debugStack.push(head);
+		String head = tagStack.pop();
+		String parent = tagStack.peek();
+		tagStack.push(head);
 		return parent;
+	}
+	
+	protected String getTagName() {
+		return tagStack.peek();
 	}
 	
 	protected UmlModel getModel() {
