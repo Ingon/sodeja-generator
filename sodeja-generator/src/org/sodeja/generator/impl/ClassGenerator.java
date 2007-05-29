@@ -8,7 +8,7 @@ import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
-import org.sodeja.generator.java.JavaParameter;
+import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;
@@ -106,7 +106,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 
 	protected JavaMethod createSetter(JavaField field) {
 		JavaMethod setter = new JavaMethod(new JavaType(VOID_CLASS), "set" + NamingUtils.firstUpper(field.getName()));
-		setter.addParameter(new JavaParameter(field.getType(), field.getName()));
+		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
 		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
 		return setter;
 	}
