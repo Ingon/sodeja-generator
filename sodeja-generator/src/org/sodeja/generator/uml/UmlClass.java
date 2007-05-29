@@ -7,6 +7,8 @@ public class UmlClass extends UmlType implements UmlTaggableElement {
 	private UmlPackage parentPackage;
 	
 	private UmlReference<UmlStereotype> stereotype;
+	private UmlReference<UmlDependency> dependency;
+	
 	private UmlReference<UmlGeneralization> parent;
 	
 	private List<UmlTagValue> tags;
@@ -37,6 +39,14 @@ public class UmlClass extends UmlType implements UmlTaggableElement {
 	}
 	public void setStereotype(UmlReference<UmlStereotype> stereotype) {
 		this.stereotype = stereotype;
+	}
+
+	public UmlReference<UmlDependency> getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(UmlReference<UmlDependency> dependency) {
+		this.dependency = dependency;
 	}
 
 	public List<UmlTagValue> getTags() {
