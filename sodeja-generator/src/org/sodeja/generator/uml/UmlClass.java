@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UmlClass extends UmlType {
-	private UmlReference<UmlDependency> dependency;
-	
+	private List<UmlReference<UmlAbstraction>> abstractions;
 	private List<UmlAttribute> attributes;
 	
 	public UmlClass(UmlNamespace parentNamespace) {
 		super(parentNamespace);
+		
+		this.abstractions = new ArrayList<UmlReference<UmlAbstraction>>();
 		
 		this.attributes = new ArrayList<UmlAttribute>();
 	}
@@ -18,11 +19,7 @@ public class UmlClass extends UmlType {
 		return attributes;
 	}
 	
-	public UmlReference<UmlDependency> getDependency() {
-		return dependency;
-	}
-
-	public void setDependency(UmlReference<UmlDependency> dependency) {
-		this.dependency = dependency;
+	public List<UmlReference<UmlAbstraction>> getAbstractions() {
+		return abstractions;
 	}
 }

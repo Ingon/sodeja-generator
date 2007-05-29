@@ -8,6 +8,7 @@ public class UmlType extends UmlElement implements UmlTaggableElement {
 	
 	private UmlVisibility visibility;
 	
+	private List<UmlReference<UmlDependency>> dependencies;
 	private List<UmlReference<UmlGeneralization>> generalizations;
 	private List<UmlOperation> operations;
 	
@@ -17,6 +18,7 @@ public class UmlType extends UmlElement implements UmlTaggableElement {
 	public UmlType(UmlNamespace parentNamespace) {
 		this.parentNamespace = parentNamespace;
 		
+		this.dependencies = new ArrayList<UmlReference<UmlDependency>>();
 		this.generalizations = new ArrayList<UmlReference<UmlGeneralization>>();
 		this.operations = new ArrayList<UmlOperation>();
 		
@@ -34,6 +36,10 @@ public class UmlType extends UmlElement implements UmlTaggableElement {
 
 	public void setVisibility(UmlVisibility visibility) {
 		this.visibility = visibility;
+	}
+
+	public List<UmlReference<UmlDependency>> getDependencies() {
+		return dependencies;
 	}
 
 	public List<UmlReference<UmlGeneralization>> getGeneralizations() {
