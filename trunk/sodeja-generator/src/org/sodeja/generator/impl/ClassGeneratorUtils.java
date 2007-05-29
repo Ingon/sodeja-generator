@@ -3,7 +3,7 @@ package org.sodeja.generator.impl;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
-import org.sodeja.generator.java.JavaParameter;
+import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
@@ -22,7 +22,7 @@ public class ClassGeneratorUtils {
 		
 		for(UmlParameter modelParam : modelOperation.getParameters()) {
 			JavaType paramType = getParameterType(modelParam);
-			method.addParameter(new JavaParameter(paramType, modelParam.getName()));
+			method.addParameter(new JavaMethodParameter(paramType, modelParam.getName()));
 		}
 		
 		return method;
