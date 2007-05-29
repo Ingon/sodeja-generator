@@ -84,6 +84,7 @@ public class XmiParser extends DefaultHandler {
 		mapping.put("UML:AssociationEnd", new UmlAssociationEndParserStrategy());
 		
 		mapping.put("UML:Generalization", new UmlGeneralizationParserStrategy());
+		mapping.put("UML:Dependency", new UmlDependencyParserStrategy());
 	}
 	
 	@Override

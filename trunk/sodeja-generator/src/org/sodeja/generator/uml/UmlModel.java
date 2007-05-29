@@ -13,6 +13,7 @@ public class UmlModel extends UmlElement {
 	private List<UmlStereotype> stereotypes;
 	private List<UmlAssociation> associations;
 	private List<UmlGeneralization> generatlizations;
+	private List<UmlDependency> dependencies;
 	
 	public UmlModel() {
 		this.types = new ArrayList<UmlDataType>();
@@ -24,6 +25,7 @@ public class UmlModel extends UmlElement {
 		this.stereotypes = new ArrayList<UmlStereotype>();
 		this.associations = new ArrayList<UmlAssociation>();
 		this.generatlizations = new ArrayList<UmlGeneralization>();
+		this.dependencies = new ArrayList<UmlDependency>();
 	}
 	
 	public List<UmlPackage> getPackages() {
@@ -56,6 +58,10 @@ public class UmlModel extends UmlElement {
 
 	public List<UmlGeneralization> getGeneratlizations() {
 		return generatlizations;
+	}
+
+	public List<UmlDependency> getDependencies() {
+		return dependencies;
 	}
 
 	public List<UmlClass> findClassesByStereotype(String name) {
