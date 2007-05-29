@@ -6,7 +6,7 @@ import java.util.List;
 public class JavaMethod extends JavaField {
 	private boolean _abstract;
 	
-	private List<JavaParameter> parameters;
+	private List<JavaMethodParameter> parameters;
 	private List<JavaClass> exceptions;
 	
 	private String customId;
@@ -14,10 +14,10 @@ public class JavaMethod extends JavaField {
 	private String content;
 	
 	public JavaMethod(JavaType type, String name) {
-		this(type, name, new ArrayList<JavaParameter>());
+		this(type, name, new ArrayList<JavaMethodParameter>());
 	}
 
-	public JavaMethod(JavaType type, String name, List<JavaParameter> parameters) {
+	public JavaMethod(JavaType type, String name, List<JavaMethodParameter> parameters) {
 		super(type, name);
 		this.accessModifier = JavaAccessModifier.PUBLIC;
 		this.parameters = parameters;
@@ -25,7 +25,7 @@ public class JavaMethod extends JavaField {
 		this.content = "";
 	}
 	
-	public List<JavaParameter> getParameters() {
+	public List<JavaMethodParameter> getParameters() {
 		return parameters;
 	}
 	
@@ -54,7 +54,7 @@ public class JavaMethod extends JavaField {
 		return content;
 	}
 
-	public void addParameter(JavaParameter parameter) {
+	public void addParameter(JavaMethodParameter parameter) {
 		parameters.add(parameter);
 	}
 

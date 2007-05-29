@@ -94,7 +94,7 @@ public class JavaClass implements Annotateable, AccessModifiable {
 	
 	public void addMethod(JavaMethod method) {
 		autoImport(method);
-		for(JavaParameter param : method.getParameters()) {
+		for(JavaMethodParameter param : method.getParameters()) {
 			autoImport(param.getType());
 		}
 		methods.add(method);

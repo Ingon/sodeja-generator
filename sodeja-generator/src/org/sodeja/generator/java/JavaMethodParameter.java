@@ -1,10 +1,10 @@
 package org.sodeja.generator.java;
 
-public class JavaParameter {
+public class JavaMethodParameter {
 	private JavaType type;
 	private String name;
 	
-	public JavaParameter(JavaType type, String name) {
+	public JavaMethodParameter(JavaType type, String name) {
 		this.type = type;
 		this.name = name;
 	}
