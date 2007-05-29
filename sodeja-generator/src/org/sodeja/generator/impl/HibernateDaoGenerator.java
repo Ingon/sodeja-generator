@@ -12,6 +12,7 @@ import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
+import org.sodeja.generator.uml.UmlNamespace;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlPackage;
 
@@ -44,7 +45,7 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 			return;
 		}
 		
-		UmlPackage modelRootPackage = modelClass.getParentPackage().getParent();
+		UmlNamespace modelRootPackage = modelClass.getParentNamespace();
 		UmlPackage modelDaoPackage = new UmlPackage(modelRootPackage);
 		modelDaoPackage.setName("dao");
 		

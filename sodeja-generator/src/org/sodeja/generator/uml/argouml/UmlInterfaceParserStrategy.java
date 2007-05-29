@@ -5,7 +5,7 @@ import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlElement;
 import org.sodeja.generator.uml.UmlGeneralization;
 import org.sodeja.generator.uml.UmlInterface;
-import org.sodeja.generator.uml.UmlPackage;
+import org.sodeja.generator.uml.UmlNamespace;
 import org.sodeja.generator.uml.UmlParameter;
 import org.sodeja.generator.uml.UmlReference;
 import org.xml.sax.Attributes;
@@ -14,12 +14,12 @@ public class UmlInterfaceParserStrategy extends XmiParserStrategy {
 	@Override
 	public void begin(XmiParser context, Attributes attributes) {
 		UmlElement parent = context.peek();
-		if(parent instanceof UmlPackage) {
-			UmlInterface element = new UmlInterface((UmlPackage) parent);
+		if(parent instanceof UmlNamespace) {
+			UmlInterface element = new UmlInterface((UmlNamespace) parent);
 			fill(element, attributes);
 			context.push(element);
 			
-			((UmlPackage) parent).addInterface(element);
+			((UmlNamespace) parent).getInterfaces().add(element);
 		} else if(parent instanceof UmlAttribute) {
 			UmlReference<UmlInterface> reference = createReference(context, UmlInterface.class, attributes);
 			((UmlAttribute) parent).setType(reference);

@@ -2,6 +2,8 @@ package org.sodeja.generator.impl;
 
 import java.util.List;
 
+import org.sodeja.collections.CollectionUtils;
+import org.sodeja.collections.ListUtils;
 import org.sodeja.generator.GeneratorContext;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
@@ -19,6 +21,8 @@ import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlMultiplicityRange;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOrdering;
+import org.sodeja.generator.uml.UmlReference;
+import org.sodeja.generator.uml.UmlType;
 
 public class ClassGenerator extends AbstractClassGenerator {
 	
@@ -40,7 +44,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {
-		JavaPackage domainPackage = JavaPackage.createFromDots(modelClass.getParentPackage().getFullName());
+		JavaPackage domainPackage = JavaPackage.createFromDots(modelClass.getParentNamespace().getFullName());
 		JavaClass domainClass = createClass(domainPackage, model, modelClass);
 		writeClass(domainClass);
 	}
@@ -67,9 +71,14 @@ public class ClassGenerator extends AbstractClassGenerator {
 	
 	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
 		JavaClass domainClass = new JavaClass(domainPackage, modelClass.getName());
-		if(modelClass.getParent() != null) {
-			UmlGeneralization modelGeneralization = modelClass.getParent().getReferent();
-			UmlClass modelParentClass = modelGeneralization.getParent().getReferent();
+		if(! CollectionUtils.isEmpty(modelClass.getGeneralizations())) {
+			if(modelClass.getGeneralizations().size() > 1) {
+				throw new IllegalArgumentException("It is not possible to implement more than one class");
+			}
+			
+			UmlReference<UmlGeneralization> generalizationRef = ListUtils.first(modelClass.getGeneralizations());
+			UmlGeneralization generalization = generalizationRef.getReferent();
+			UmlClass modelParentClass = (UmlClass) generalization.getParent().getReferent();
 			domainClass.setParent(ClassGeneratorUtils.getJavaType(modelParentClass));
 		}
 		
@@ -126,13 +135,13 @@ public class ClassGenerator extends AbstractClassGenerator {
 
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlClass modelClass, UmlAssociation modelAssociation) {
 		UmlAssociationEnd otherEnd = modelAssociation.getOtherEnd(modelClass);
-		UmlClass otherModelClass = otherEnd.getReferent().getReferent();
 		
 		if(! otherEnd.isNavigateale()) {
 			return null;
 		}
 		
-		JavaType type = createType(otherEnd, otherModelClass);
+		UmlType otherModelType = otherEnd.getReferent().getReferent();
+		JavaType type = createType(otherEnd, otherModelType);
 		return new JavaField(type, otherEnd.getName());
 	}
 	
@@ -149,8 +158,8 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return ClassGeneratorUtils.createMethod(domainClass, modelOperation);
 	}
 
-	protected JavaType createType(UmlAssociationEnd otherEnd, UmlClass otherModelClass) {
-		JavaClass otherClass = ClassGeneratorUtils.getJavaClass(otherModelClass);
+	protected JavaType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
+		JavaClass otherClass = ClassGeneratorUtils.getJavaClass(otherModelType);
 		if(otherEnd.getRange().isMulty()) {
 			JavaType type = new JavaType(getJavaClass(otherEnd.getOrdering()));
 			type.addParameter(otherClass);
