@@ -4,6 +4,7 @@ import org.sodeja.generator.uml.UmlElement;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOwnerScope;
 import org.sodeja.generator.uml.UmlType;
+import org.sodeja.generator.uml.UmlVisibility;
 import org.xml.sax.Attributes;
 
 public class UmlOperationParserStrategy extends XmiParserStrategy {
@@ -16,9 +17,11 @@ public class UmlOperationParserStrategy extends XmiParserStrategy {
 		
 		UmlOperation element = new UmlOperation();
 		fill(element, attributes);
-		element.setScope(UmlOwnerScope.valueOf(attributes.getValue("ownerScope").toUpperCase()));
-		context.push(element);
 		
+		element.setScope(UmlOwnerScope.valueOf(attributes.getValue("ownerScope").toUpperCase()));
+		element.setVisibility(UmlVisibility.valueOf(attributes.getValue("visibility").toUpperCase()));
+		
+		context.push(element);
 		((UmlType) parent).getOperations().add(element);
 	}
 }

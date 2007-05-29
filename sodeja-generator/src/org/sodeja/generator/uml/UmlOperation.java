@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UmlOperation extends UmlElement implements UmlTaggableElement {
+	private UmlVisibility visibility;
+	private UmlOwnerScope scope;
+	
 	private UmlParameter result;
 	private List<UmlParameter> parameters;
 	
-	private UmlOwnerScope scope;
 	private List<UmlTagValue> tags;
 	
 	public UmlOperation() {
@@ -29,6 +31,14 @@ public class UmlOperation extends UmlElement implements UmlTaggableElement {
 	
 	public List<UmlTagValue> getTags() {
 		return tags;
+	}
+
+	public UmlVisibility getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(UmlVisibility visibility) {
+		this.visibility = visibility;
 	}
 
 	public UmlOwnerScope getScope() {
