@@ -227,8 +227,8 @@ public class DefaultJavaClassWriter {
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		for(Iterator<JavaParameter> ite = method.getParameters().iterator();ite.hasNext();) {
-			JavaParameter param = ite.next();
+		for(Iterator<JavaMethodParameter> ite = method.getParameters().iterator();ite.hasNext();) {
+			JavaMethodParameter param = ite.next();
 			sb.append(String.format("%s %s", getTypeText(param.getType()), param.getName()));
 			if(ite.hasNext()) {
 				sb.append(", ");
