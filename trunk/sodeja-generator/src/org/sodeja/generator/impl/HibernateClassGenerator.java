@@ -1,5 +1,6 @@
 package org.sodeja.generator.impl;
 
+import org.sodeja.collections.CollectionUtils;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
@@ -94,7 +95,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 		
 		UmlAssociationEnd thisModelEnd = modelAssociation.getThisEnd(modelClass);
 		UmlAssociationEnd otherModelEnd = modelAssociation.getOtherEnd(modelClass);
-		UmlClass otherModelClass = otherModelEnd.getReferent().getReferent();
+		UmlClass otherModelClass = (UmlClass) otherModelEnd.getReferent().getReferent();
 		if(GeneratorUtils.isEmbedded(otherModelClass)) {
 			field.addAnnotation(PERSISTANCE_EMBEDDED);
 		} else if(GeneratorUtils.isEnum(otherModelClass)) {
@@ -153,7 +154,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	}
 
 	private boolean isNotRootParent(UmlModel model, UmlClass modelClass) {
-		return isParent(model, modelClass) && modelClass.getParent() != null;
+		return isParent(model, modelClass) && ! (CollectionUtils.isEmpty(modelClass.getGeneralizations())); //modelClass.getParent() != null
 	}
 	
 	private void addDomainAnnotations(JavaClass clazz) {

@@ -7,6 +7,7 @@ import org.sodeja.generator.GeneratorContext;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
+import org.sodeja.generator.uml.UmlNamespace;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlPackage;
 import org.sodeja.generator.xml.spring.SpringBean;
@@ -66,7 +67,7 @@ public class SpringDaoConfigurationGenerator extends AbstractConfigurationGenera
 			return getDaoImplementation().getFullName();
 		}
 		
-		UmlPackage modelRootPackage = modelClass.getParentPackage().getParent();
+		UmlNamespace modelRootPackage = modelClass.getParentNamespace();
 		UmlPackage modelDaoPackage = new UmlPackage(modelRootPackage);
 		modelDaoPackage.setName("dao");
 		

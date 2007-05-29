@@ -1,34 +1,29 @@
 package org.sodeja.generator.uml.argouml;
 
-import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
-import org.sodeja.generator.uml.UmlClass;
-import org.sodeja.generator.uml.UmlDependency;
 import org.sodeja.generator.uml.UmlElement;
+import org.sodeja.generator.uml.UmlEnumeration;
 import org.sodeja.generator.uml.UmlGeneralization;
 import org.sodeja.generator.uml.UmlNamespace;
 import org.sodeja.generator.uml.UmlParameter;
 import org.sodeja.generator.uml.UmlReference;
 import org.xml.sax.Attributes;
 
-public class UmlClassParserStrategy extends XmiParserStrategy {
+public class UmlEnumerationParserStrategy extends XmiParserStrategy {
 	@Override
 	public void begin(XmiParser context, Attributes attributes) {
 		UmlElement parent = context.peek();
 		if(parent instanceof UmlNamespace) {
-			UmlClass element = new UmlClass((UmlNamespace) parent);
+			UmlEnumeration element = new UmlEnumeration((UmlNamespace) parent);
 			fill(element, attributes);
 			context.push(element);
 			
-			((UmlNamespace) parent).getClasses().add(element);
+			((UmlNamespace) parent).getEnumerations().add(element);
 		} else if(parent instanceof UmlAttribute) {
-			UmlReference<UmlClass> reference = createReference(context, UmlClass.class, attributes);
+			UmlReference<UmlEnumeration> reference = createReference(context, UmlEnumeration.class, attributes);
 			((UmlAttribute) parent).setType(reference);
-		} else if(parent instanceof UmlAssociationEnd) {
-			UmlReference<UmlClass> reference = createReference(context, UmlClass.class, attributes);
-			((UmlAssociationEnd) parent).setReferent(reference);
 		} else if(parent instanceof UmlGeneralization) {
-			UmlReference<UmlClass> reference = createReference(context, UmlClass.class, attributes);
+			UmlReference<UmlEnumeration> reference = createReference(context, UmlEnumeration.class, attributes);
 			String xmlParent = context.getParentTagName();
 			if(xmlParent.equals("UML:Generalization.child")) {
 				((UmlGeneralization) parent).setChild(reference);
@@ -36,16 +31,8 @@ public class UmlClassParserStrategy extends XmiParserStrategy {
 				((UmlGeneralization) parent).setParent(reference);
 			}
 		} else if(parent instanceof UmlParameter) {
-			UmlReference<UmlClass> reference = createReference(context, UmlClass.class, attributes);
+			UmlReference<UmlEnumeration> reference = createReference(context, UmlEnumeration.class, attributes);
 			((UmlParameter) parent).setType(reference);
-		} else if(parent instanceof UmlDependency) {
-			UmlReference<UmlClass> reference = createReference(context, UmlClass.class, attributes);
-			String xmlParent = context.getParentTagName();
-			if(xmlParent.equals("UML:Dependency.client")) {
-				((UmlDependency) parent).setClient(reference);
-			} else {
-				((UmlDependency) parent).setSupplier(reference);
-			}
 		} else {
 			throw new RuntimeException();
 		}
@@ -53,7 +40,7 @@ public class UmlClassParserStrategy extends XmiParserStrategy {
 
 	@Override
 	public void end(XmiParser context, String content) {
-		if(context.peek() instanceof UmlClass) {
+		if(context.peek() instanceof UmlEnumeration) {
 			super.end(context, content);
 		}
 	}

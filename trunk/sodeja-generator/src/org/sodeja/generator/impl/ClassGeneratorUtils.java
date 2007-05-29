@@ -1,12 +1,14 @@
 package org.sodeja.generator.impl;
 
 import org.sodeja.generator.java.JavaClass;
+import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
+import org.sodeja.generator.uml.UmlInterface;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOwnerScope;
 import org.sodeja.generator.uml.UmlParameter;
@@ -68,6 +70,8 @@ public class ClassGeneratorUtils {
 	protected static JavaClass getJavaClass(UmlType modelType) {
 		if(modelType instanceof UmlDataType) {
 			return new JavaClass(null, modelType.getName());
+		} else if(modelType instanceof UmlInterface) {
+			return getJavaClass((UmlInterface) modelType);
 		} else if(modelType instanceof UmlClass) {
 			return getJavaClass((UmlClass) modelType);
 		} else {
@@ -76,7 +80,12 @@ public class ClassGeneratorUtils {
 	}
 	
 	protected static JavaClass getJavaClass(UmlClass modelClass) {
-		JavaPackage pack = JavaPackage.createFromDots(modelClass.getParentPackage().getFullName());
+		JavaPackage pack = JavaPackage.createFromDots(modelClass.getParentNamespace().getFullName());
 		return new JavaClass(pack, modelClass.getName());
+	}
+
+	protected static JavaClass getJavaClass(UmlInterface modelInterface) {
+		JavaPackage pack = JavaPackage.createFromDots(modelInterface.getParentNamespace().getFullName());
+		return new JavaInterface(pack, modelInterface.getName());
 	}
 }

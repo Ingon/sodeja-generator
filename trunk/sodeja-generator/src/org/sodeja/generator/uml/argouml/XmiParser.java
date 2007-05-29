@@ -64,12 +64,15 @@ public class XmiParser extends DefaultHandler {
 		mapping.put("UML:MultiplicityRange", new UmlMultiplicityRangeParserStrategy());
 		
 		mapping.put("UML:Model", new UmlModelParserStrategy());
-		mapping.put("UML:DataType", new UmlDataTypeParserStrategy());
 		mapping.put("UML:Stereotype", new UmlStereotypeParserStrategy());
 		
 		mapping.put("UML:Package", new UmlPackageParserStrategy());
 		mapping.put("UML:Class", new UmlClassParserStrategy());
 		mapping.put("UML:Interface", new UmlInterfaceParserStrategy());
+		mapping.put("UML:DataType", new UmlDataTypeParserStrategy());
+		
+		mapping.put("UML:Enumeration", new UmlEnumerationParserStrategy());
+		mapping.put("UML:EnumerationLiteral", new UmlEnumerationLiteralParserStrategy());
 		
 		mapping.put("UML:TagDefinition", new UmlTagDefinitionParserStrategy());
 		mapping.put("UML:TaggedValue", new UmlTagValueParserStrategy());
