@@ -45,7 +45,7 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 			return;
 		}
 		
-		UmlNamespace modelRootPackage = modelClass.getParentNamespace();
+		UmlNamespace modelRootPackage = modelClass.getParentNamespace().getParent();
 		UmlPackage modelDaoPackage = new UmlPackage(modelRootPackage);
 		modelDaoPackage.setName("dao");
 		
