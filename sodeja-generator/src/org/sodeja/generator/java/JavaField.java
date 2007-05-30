@@ -3,7 +3,7 @@ package org.sodeja.generator.java;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaField implements Annotateable, AccessModifiable {
+public class JavaField implements JavaMember, JavaAnnotatedElement, AccessModifiable {
 	protected JavaAccessModifier accessModifier = JavaAccessModifier.PRIVATE;
 	protected boolean isStatic;
 	protected JavaType type;

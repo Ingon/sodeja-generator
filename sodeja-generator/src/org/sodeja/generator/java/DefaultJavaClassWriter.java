@@ -73,7 +73,7 @@ public class DefaultJavaClassWriter {
 		out.println();
 	}
 	
-	private void writeAnnotations(Annotateable annotatable, PrintWriter out) {
+	private void writeAnnotations(JavaAnnotatedElement annotatable, PrintWriter out) {
 		if(CollectionUtils.isEmpty(annotatable.getAnnotations())) {
 			return;
 		}
