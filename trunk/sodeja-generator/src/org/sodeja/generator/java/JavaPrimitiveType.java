@@ -1,6 +1,7 @@
 package org.sodeja.generator.java;
 
-public enum JavaPrimitive implements JavaType {
+public enum JavaPrimitiveType implements JavaType {
+	VOID,
 	BOOLEAN,
 	CHAR,
 	BYTE,

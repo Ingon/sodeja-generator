@@ -323,8 +323,8 @@ public class DefaultJavaClassWriter {
 	private String getTypeText(JavaType type) {
 		if(type instanceof JavaObjectType) {
 			return getObjectTypeText((JavaObjectType) type);
-		} else if(type instanceof JavaPrimitive) {
-			return ((JavaPrimitive) type).name().toLowerCase();
+		} else if(type instanceof JavaPrimitiveType) {
+			return ((JavaPrimitiveType) type).name().toLowerCase();
 		} else {
 			throw new IllegalArgumentException();
 		}
