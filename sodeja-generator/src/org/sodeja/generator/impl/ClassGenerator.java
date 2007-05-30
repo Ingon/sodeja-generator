@@ -10,7 +10,6 @@ import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
-import org.sodeja.generator.java.JavaObjectType;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlAssociation;
@@ -80,7 +79,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 			UmlReference<UmlGeneralization> generalizationRef = ListUtils.first(modelClass.getGeneralizations());
 			UmlGeneralization generalization = generalizationRef.getReferent();
 			UmlClass modelParentClass = (UmlClass) generalization.getParent().getReferent();
-			domainClass.setParent(ClassGeneratorUtils.getJavaType(modelParentClass));
+			domainClass.setParent(ClassGeneratorUtils.getJavaClass(modelParentClass));
 		}
 		
 		return domainClass;
@@ -100,7 +99,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlAttribute attribute) {
-		JavaObjectType type = ClassGeneratorUtils.getJavaType(attribute.getType());
+		JavaType type = ClassGeneratorUtils.getJavaClass(attribute.getType());
 		return new JavaField(type, attribute.getName());
 	}
 
@@ -115,7 +114,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaMethod createSetter(JavaField field) {
-		JavaMethod setter = new JavaMethod(new JavaObjectType(VOID_CLASS), "set" + NamingUtils.firstUpper(field.getName()));
+		JavaMethod setter = new JavaMethod(VOID_CLASS, "set" + NamingUtils.firstUpper(field.getName()));
 		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
 		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
 		return setter;
@@ -142,7 +141,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		}
 		
 		UmlType otherModelType = otherEnd.getReferent().getReferent();
-		JavaObjectType type = createType(otherEnd, otherModelType);
+		JavaType type = createType(otherEnd, otherModelType);
 		return new JavaField(type, otherEnd.getName());
 	}
 	
@@ -159,14 +158,11 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return ClassGeneratorUtils.createMethod(domainClass, modelOperation);
 	}
 
-	protected JavaObjectType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
-		JavaClass otherClass = ClassGeneratorUtils.getJavaClass(otherModelType);
+	protected JavaType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
 		if(otherEnd.getRange().isMulty()) {
-			JavaObjectType type = new JavaObjectType(getJavaClass(otherEnd.getOrdering()));
-			type.addParameter(otherClass);
-			return type;
+			return getJavaClass(otherEnd.getOrdering());
 		} else {
-			return new JavaObjectType(otherClass);
+			return ClassGeneratorUtils.getJavaClass(otherModelType);
 		}
 	}
 	
