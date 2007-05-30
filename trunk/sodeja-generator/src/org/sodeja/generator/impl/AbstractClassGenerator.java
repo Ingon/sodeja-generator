@@ -5,9 +5,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 import org.sodeja.generator.GeneratorContext;
-import org.sodeja.generator.java.DefaultJavaClassWriter;
-import org.sodeja.generator.java.JavaClass;
-import org.sodeja.generator.java.MergingJavaFile;
+import org.sodeja.generator.java_old.DefaultJavaClassWriter;
+import org.sodeja.generator.java_old.JavaClass;
+import org.sodeja.generator.java_old.MergingJavaFile;
 import org.sodeja.generator.uml.UmlModel;
 
 public abstract class AbstractClassGenerator extends AbstractGenerator {
