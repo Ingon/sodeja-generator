@@ -1,5 +1,5 @@
 package org.sodeja.generator.java;
 
-public interface AccessModifiable {
+public interface JavaAccessModifiable {
 	public JavaAccessModifier getAccessModifier();
 }

@@ -256,7 +256,7 @@ public class DefaultJavaClassWriter {
 		return sb.toString();
 	}
 
-	private String getAccess(AccessModifiable modifiable) {
+	private String getAccess(JavaAccessModifiable modifiable) {
 		JavaAccessModifier modifier = modifiable.getAccessModifier();
 		if(modifier == JavaAccessModifier.PACKAGE) {
 			return "";
