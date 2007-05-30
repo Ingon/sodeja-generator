@@ -5,18 +5,20 @@ import java.util.List;
 
 public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable {
 	private JavaPackage _package;
-	private String name;
 	
 	private List<JavaClass> imports;
 
 	private List<JavaAnnotation> annotations;
 
 	private JavaAccessModifier accessModifier = JavaAccessModifier.PUBLIC;
+	private String name;
+	
 	private JavaClass parent;
 	private List<JavaInterface> interfaces;
 	
-	private List<JavaField> fields;
-	private List<JavaMethod> methods;
+	private List<JavaMember> members;
+//	private List<JavaField> fields;
+//	private List<JavaMethod> methods;
 	
 	public JavaClass(JavaPackage _package, String name) {
 		this._package = _package;
@@ -25,8 +27,9 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		imports = new ArrayList<JavaClass>();
 		annotations = new ArrayList<JavaAnnotation>();
 		interfaces = new ArrayList<JavaInterface>();
-		fields = new ArrayList<JavaField>();
-		methods = new ArrayList<JavaMethod>();
+		members = new ArrayList<JavaMember>();
+//		fields = new ArrayList<JavaField>();
+//		methods = new ArrayList<JavaMethod>();
 	}
 	
 	public JavaPackage getPackage() {
@@ -80,30 +83,62 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	}
 	
 	public List<JavaField> getFields() {
-		return fields;
+		List<JavaField> result = new ArrayList<JavaField>();
+		for(JavaMember member : members) {
+			if(member instanceof JavaField) {
+				result.add((JavaField) member);
+			}
+		}
+		
+		return result;
+//		return Collections.unmodifiableList(fields);
 	}
 
 	public void addField(JavaField field) {
 		autoImport(field);
-		fields.add(field);
+		members.add(field);
 	}
 	
 	public List<JavaMethod> getMethods() {
-		return methods;
+		List<JavaMethod> result = new ArrayList<JavaMethod>();
+		for(JavaMember member : members) {
+			if(member instanceof JavaMethod) {
+				result.add((JavaMethod) member);
+			}
+		}
+		
+		return result;
+//		return Collections.unmodifiableList(methods);
 	}
 	
 	public void addMethod(JavaMethod method) {
 		autoImport(method);
-		methods.add(method);
+		members.add(method);
 	}
 
-	public boolean isSystem() {
-		return _package.getFullName().equals("java.lang");
+	public List<JavaConstructor> getConstructors() {
+		List<JavaConstructor> result = new ArrayList<JavaConstructor>();
+		for(JavaMember member : members) {
+			if(member instanceof JavaConstructor) {
+				result.add((JavaConstructor) member);
+			}
+		}
+		
+		return result;
+	}
+	
+	public void addConstructor(JavaConstructor constructor) {
+		autoImport(constructor);
+		members.add(constructor);
 	}
 	
 	public void addInterface(JavaInterface inter) {
 		autoImport(inter);
 		interfaces.add(inter);
+	}
+	
+	public boolean isSystem() {
+		return _package.getFullName().equals("java.lang");
 	}
 	
 	public String getFullName() {
@@ -136,6 +171,15 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		autoImportMember(field);
 		if(field.getType() instanceof JavaClass) {
 			autoImport((JavaClass) field.getType());
+		}
+	}
+	
+	private void autoImport(JavaConstructor constructor) {
+		autoImportMember(constructor);
+		for(JavaMethodParameter param : constructor.getParameters()) {
+			if(param.getType() instanceof JavaClass) {
+				autoImport((JavaClass) param.getType());
+			}
 		}
 	}
 	
