@@ -41,6 +41,7 @@ public class DefaultJavaClassWriter {
 			writeValues(((JavaEnum) clazz).getValues(), out);
 		}
 		writeFields(clazz.getFields(), out);
+		writeConstructors(clazz.getConstructors(), out);
 		writeMethods(clazz.getMethods(), mergedContents, out);
 		level = 0;
 		
@@ -164,6 +165,22 @@ public class DefaultJavaClassWriter {
 		out.println();
 	}
 	
+	private void writeConstructors(List<JavaConstructor> constructors, PrintWriter out) {
+		if(CollectionUtils.isEmpty(constructors)) {
+			return;
+		}
+
+		for(JavaConstructor constructor : constructors) {
+			writeConstructor(constructor, out);
+		}
+	}
+
+	private void writeConstructor(JavaConstructor constructor, PrintWriter out) {
+		writeAnnotations(constructor, out);
+		
+		// TODO there is still logic to be added.
+	}
+
 	private void writeMethods(List<JavaMethod> methods, MergingJavaFile mergedContents, PrintWriter out) {
 		if(CollectionUtils.isEmpty(methods)) {
 			return;
