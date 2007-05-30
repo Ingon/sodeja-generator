@@ -67,7 +67,7 @@ public class SpringDaoConfigurationGenerator extends AbstractConfigurationGenera
 			return getDaoImplementation().getFullName();
 		}
 		
-		UmlNamespace modelRootPackage = modelClass.getParentNamespace();
+		UmlNamespace modelRootPackage = modelClass.getParentNamespace().getParent();
 		UmlPackage modelDaoPackage = new UmlPackage(modelRootPackage);
 		modelDaoPackage.setName("dao");
 		
