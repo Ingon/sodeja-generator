@@ -4,7 +4,6 @@ import org.sodeja.collections.CollectionUtils;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
-import org.sodeja.generator.java.JavaObjectType;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.uml.UmlAggregationType;
 import org.sodeja.generator.uml.UmlAssociation;
@@ -169,7 +168,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	private void addDomainId(JavaClass clazz) {
 		clazz.addImport(PERSISTANCE_GENERATION_TYPE);
 		
-		JavaField idField = new JavaField(new JavaObjectType(LONG), "id");
+		JavaField idField = new JavaField(LONG, "id");
 		idField.addAnnotation(PERSISTANCE_ID);
 		idField.addAnnotation(PERSISTANCE_GENERATED_VALUE, "strategy=GenerationType.SEQUENCE, generator=\"SEQ_GENERATOR\"");
 		clazz.addField(idField);

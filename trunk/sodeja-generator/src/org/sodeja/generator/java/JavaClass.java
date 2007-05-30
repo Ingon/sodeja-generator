@@ -3,7 +3,7 @@ package org.sodeja.generator.java;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
+public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable {
 	private JavaPackage _package;
 	private String name;
 	
@@ -12,8 +12,8 @@ public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
 	private List<JavaAnnotation> annotations;
 
 	private JavaAccessModifier accessModifier = JavaAccessModifier.PUBLIC;
-	private JavaObjectType parent;
-	private List<JavaObjectType> interfaces;
+	private JavaClass parent;
+	private List<JavaInterface> interfaces;
 	
 	private List<JavaField> fields;
 	private List<JavaMethod> methods;
@@ -24,7 +24,7 @@ public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
 		
 		imports = new ArrayList<JavaClass>();
 		annotations = new ArrayList<JavaAnnotation>();
-		interfaces = new ArrayList<JavaObjectType>();
+		interfaces = new ArrayList<JavaInterface>();
 		fields = new ArrayList<JavaField>();
 		methods = new ArrayList<JavaMethod>();
 	}
@@ -49,16 +49,16 @@ public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
 		return name;
 	}
 
-	public JavaObjectType getParent() {
+	public JavaClass getParent() {
 		return parent;
 	}
 
-	public void setParent(JavaObjectType parent) {
+	public void setParent(JavaClass parent) {
 		autoImport(parent);
 		this.parent = parent;
 	}
 	
-	public List<JavaObjectType> getInterfaces() {
+	public List<JavaInterface> getInterfaces() {
 		return interfaces;
 	}
 
@@ -94,11 +94,6 @@ public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
 	
 	public void addMethod(JavaMethod method) {
 		autoImport(method);
-		for(JavaMethodParameter param : method.getParameters()) {
-			if(param.getType() instanceof JavaObjectType) {
-				autoImport((JavaObjectType) param.getType());
-			}
-		}
 		methods.add(method);
 	}
 
@@ -106,10 +101,7 @@ public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
 		return _package.getFullName().equals("java.lang");
 	}
 	
-	public void addInterface(JavaObjectType inter) {
-		if(! (inter.getBase() instanceof JavaInterface)) {
-			throw new IllegalArgumentException();
-		}
+	public void addInterface(JavaInterface inter) {
 		autoImport(inter);
 		interfaces.add(inter);
 	}
@@ -128,19 +120,28 @@ public class JavaClass implements JavaAnnotatedElement, JavaAccessModifiable {
 		return name.equals(other.name) && _package.equals(other._package);
 	}
 
-	private void autoImport(JavaField field) {
-		for(JavaAnnotation annotation : field.getAnnotations()) {
-			autoImport(annotation.getType());
+	private void autoImport(JavaMethod method) {
+		autoImportMember(method);
+		if(method.getReturnType() instanceof JavaClass) {
+			autoImport((JavaClass) method.getReturnType());
 		}
-		if(field.getType() instanceof JavaObjectType) {
-			autoImport((JavaObjectType) field.getType());
+		for(JavaMethodParameter param : method.getParameters()) {
+			if(param.getType() instanceof JavaClass) {
+				autoImport((JavaClass) param.getType());
+			}
+		}
+	}
+
+	private void autoImport(JavaField field) {
+		autoImportMember(field);
+		if(field.getType() instanceof JavaClass) {
+			autoImport((JavaClass) field.getType());
 		}
 	}
 	
-	private void autoImport(JavaObjectType type) {
-		autoImport(type.getBase());
-		for(JavaClass param : type.getParams()) {
-			autoImport(param);
+	private void autoImportMember(JavaMember member) {
+		for(JavaAnnotation annotation : member.getAnnotations()) {
+			autoImport(annotation.getType());
 		}
 	}
 	

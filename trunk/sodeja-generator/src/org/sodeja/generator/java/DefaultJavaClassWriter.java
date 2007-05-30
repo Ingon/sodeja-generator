@@ -178,12 +178,12 @@ public class DefaultJavaClassWriter {
 		writeAnnotations(method, out);
 		if(method.isAbstract()) {
 			out.format("%s%s abstract %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
-					getTypeText(method.getType()), method.getName(), getParameters(method), getThrows(method));
+					getTypeText(method.getReturnType()), method.getName(), getParameters(method), getThrows(method));
 			out.println();
 			return;
 		}
 		
-		out.format("%s%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), getTypeText(method.getType()), 
+		out.format("%s%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), getTypeText(method.getReturnType()), 
 				method.getName(), getParameters(method), getThrows(method));
 		out.println();
 		
@@ -265,15 +265,19 @@ public class DefaultJavaClassWriter {
 		return modifier.name().toLowerCase();
 	}
 	
-	private Object getStatic(JavaField field) {
+	private String getStatic(JavaField field) {
 		return field.isStatic() ? " static" : "";
 	}
 
+	private String getStatic(JavaMethod method) {
+		return method.isStatic() ? " static" : "";
+	}
+	
 	private String getExtends() {
 		if(clazz.getParent() == null) {
 			return "";
 		}
-		return String.format(" extends %s", getObjectTypeText(clazz.getParent()));
+		return String.format(" extends %s", getTypeText(clazz.getParent()));
 	}
 
 	private String getImplements() {
@@ -298,9 +302,9 @@ public class DefaultJavaClassWriter {
 		return sb.toString();
 	}
 	
-	private void addWithSeparators(StringBuilder sb, List<JavaObjectType> classes) {
-		for(Iterator<JavaObjectType> ite = classes.iterator();ite.hasNext();) {
-			sb.append(getObjectTypeText(ite.next()));
+	private void addWithSeparators(StringBuilder sb, List<JavaInterface> classes) {
+		for(Iterator<JavaInterface> ite = classes.iterator();ite.hasNext();) {
+			sb.append(getTypeText(ite.next()));
 			if(ite.hasNext()) {
 				sb.append(", ");
 			}
@@ -321,8 +325,8 @@ public class DefaultJavaClassWriter {
 	}
 	
 	private String getTypeText(JavaType type) {
-		if(type instanceof JavaObjectType) {
-			return getObjectTypeText((JavaObjectType) type);
+		if(type instanceof JavaClass) {
+			return getTypeText((JavaClass) type);
 		} else if(type instanceof JavaPrimitiveType) {
 			return ((JavaPrimitiveType) type).name().toLowerCase();
 		} else {
@@ -330,24 +334,24 @@ public class DefaultJavaClassWriter {
 		}
 	}
 	
-	private String getObjectTypeText(JavaObjectType type) {
-		if(CollectionUtils.isEmpty(type.getParams())) {
-			return getTypeText(type.getBase());
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(getTypeText(type.getBase()));
-		sb.append("<");
-		for(Iterator<JavaClass> ite = type.getParams().iterator();ite.hasNext();) {
-			JavaClass clazz = ite.next();
-			sb.append(getTypeText(clazz));
-			if(ite.hasNext()) {
-				sb.append(", ");
-			}
-		}
-		sb.append(">");
-		return sb.toString();
-	}
+//	private String getObjectTypeText(JavaClass type) {
+//		if(CollectionUtils.isEmpty(type.getParams())) {
+//			return getTypeText(type.getBase());
+//		}
+//		
+//		StringBuilder sb = new StringBuilder();
+//		sb.append(getTypeText(type.getBase()));
+//		sb.append("<");
+//		for(Iterator<JavaClass> ite = type.getParams().iterator();ite.hasNext();) {
+//			JavaClass clazz = ite.next();
+//			sb.append(getTypeText(clazz));
+//			if(ite.hasNext()) {
+//				sb.append(", ");
+//			}
+//		}
+//		sb.append(">");
+//		return sb.toString();
+//	}
 	
 	private String getTypeText(JavaClass type) {
 		if(type.getPackage() == null) {

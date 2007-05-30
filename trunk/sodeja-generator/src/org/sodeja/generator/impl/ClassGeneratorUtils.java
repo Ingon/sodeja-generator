@@ -4,8 +4,8 @@ import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
-import org.sodeja.generator.java.JavaObjectType;
 import org.sodeja.generator.java.JavaPackage;
+import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
 import org.sodeja.generator.uml.UmlInterface;
@@ -17,54 +17,40 @@ import org.sodeja.generator.uml.UmlType;
 
 public class ClassGeneratorUtils {
 	protected static JavaMethod createMethod(JavaClass domainClass, UmlOperation modelOperation) {
-		JavaObjectType resultType = getParameterType(modelOperation.getResult());
+		JavaType resultType = getParameterType(modelOperation.getResult());
 		JavaMethod method = new JavaMethod(resultType, modelOperation.getName());
 		method.setCustom(modelOperation.getId());
 		method.setStatic(modelOperation.getScope() == UmlOwnerScope.CLASSIFIER);
 		
 		for(UmlParameter modelParam : modelOperation.getParameters()) {
-			JavaObjectType paramType = getParameterType(modelParam);
+			JavaType paramType = getParameterType(modelParam);
 			method.addParameter(new JavaMethodParameter(paramType, modelParam.getName()));
 		}
 		
 		return method;
 	}
 
-	protected static JavaObjectType getParameterType(UmlParameter parameter) {
+	protected static JavaType getParameterType(UmlParameter parameter) {
 		JavaClass baseClass = getJavaClass(parameter.getType());
 		
 		String value = GeneratorUtils.getMulty(parameter);
 		if(value == null) {
-			return new JavaObjectType(baseClass);
+			return baseClass;
 		}
 		
 		if(value.equals("list")) {
-			JavaObjectType result = new JavaObjectType(ClassGenerator.LIST_CLASS);
-			result.addParameter(baseClass);
-			return result;
+			return ClassGenerator.LIST_CLASS;
 		} else if(value.equals("collection")) {
-			JavaObjectType result = new JavaObjectType(ClassGenerator.COLLECTION_CLASS);
-			result.addParameter(baseClass);
-			return result;
+			return ClassGenerator.COLLECTION_CLASS;
 		} else if(value.equals("set")) {
-			JavaObjectType result = new JavaObjectType(ClassGenerator.SET_CLASS);
-			result.addParameter(baseClass);
-			return result;
+			return ClassGenerator.SET_CLASS;
 		} else {
 			throw new IllegalArgumentException();
 		}
 	}
 	
-	protected static JavaObjectType getJavaType(UmlReference<? extends UmlType> modelReference) {
-		return getJavaType(modelReference.getReferent());
-	}
-	
 	protected static JavaClass getJavaClass(UmlReference<? extends UmlType> modelReference) {
 		return getJavaClass(modelReference.getReferent());
-	}
-	
-	protected static JavaObjectType getJavaType(UmlType modelType) {
-		return new JavaObjectType(getJavaClass(modelType));
 	}
 	
 	protected static JavaClass getJavaClass(UmlType modelType) {
