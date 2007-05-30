@@ -9,7 +9,7 @@ import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
-import org.sodeja.generator.java.JavaType;
+import org.sodeja.generator.java.JavaObjectType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlNamespace;
@@ -71,7 +71,7 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 	private void createImpl(GeneratorContext ctx, UmlClass modelClass, List<UmlOperation> modelDaoOperations, JavaInterface parentInterface) {
 		JavaClass daoClass = new JavaClass(parentInterface.getPackage(), modelClass.getName() + "DaoImpl");
 		daoClass.setParent(createParentTypeImpl(modelClass));
-		daoClass.addInterface(new JavaType(parentInterface));
+		daoClass.addInterface(new JavaObjectType(parentInterface));
 
 		for(UmlOperation modelOperation : modelDaoOperations) {
 			JavaMethod method = ClassGeneratorUtils.createMethod(daoClass, modelOperation);
@@ -91,15 +91,15 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 		return result;
 	}
 	
-	private JavaType createParentType(UmlClass modelClass) {
-		JavaType parent = new JavaType(getDaoInterface());
+	private JavaObjectType createParentType(UmlClass modelClass) {
+		JavaObjectType parent = new JavaObjectType(getDaoInterface());
 		parent.addParameter(ClassGeneratorUtils.getJavaClass(modelClass));
 		parent.addParameter(LONG);
 		return parent;
 	}
 
-	private JavaType createParentTypeImpl(UmlClass modelClass) {
-		JavaType parent = new JavaType(getDaoImplementation());
+	private JavaObjectType createParentTypeImpl(UmlClass modelClass) {
+		JavaObjectType parent = new JavaObjectType(getDaoImplementation());
 		parent.addParameter(ClassGeneratorUtils.getJavaClass(modelClass));
 		parent.addParameter(LONG);
 		return parent;

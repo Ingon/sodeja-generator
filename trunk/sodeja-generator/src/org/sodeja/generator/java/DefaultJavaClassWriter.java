@@ -273,7 +273,7 @@ public class DefaultJavaClassWriter {
 		if(clazz.getParent() == null) {
 			return "";
 		}
-		return String.format(" extends %s", getTypeText(clazz.getParent()));
+		return String.format(" extends %s", getObjectTypeText(clazz.getParent()));
 	}
 
 	private String getImplements() {
@@ -298,9 +298,9 @@ public class DefaultJavaClassWriter {
 		return sb.toString();
 	}
 	
-	private void addWithSeparators(StringBuilder sb, List<JavaType> classes) {
-		for(Iterator<JavaType> ite = classes.iterator();ite.hasNext();) {
-			sb.append(getTypeText(ite.next()));
+	private void addWithSeparators(StringBuilder sb, List<JavaObjectType> classes) {
+		for(Iterator<JavaObjectType> ite = classes.iterator();ite.hasNext();) {
+			sb.append(getObjectTypeText(ite.next()));
 			if(ite.hasNext()) {
 				sb.append(", ");
 			}
@@ -321,6 +321,16 @@ public class DefaultJavaClassWriter {
 	}
 	
 	private String getTypeText(JavaType type) {
+		if(type instanceof JavaObjectType) {
+			return getObjectTypeText((JavaObjectType) type);
+		} else if(type instanceof JavaPrimitive) {
+			return ((JavaPrimitive) type).name().toLowerCase();
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	private String getObjectTypeText(JavaObjectType type) {
 		if(CollectionUtils.isEmpty(type.getParams())) {
 			return getTypeText(type.getBase());
 		}

@@ -6,7 +6,7 @@ public class JavaInterface extends JavaClass {
 	}
 
 	@Override
-	public void setParent(JavaType parent) {
+	public void setParent(JavaObjectType parent) {
 		throw new UnsupportedOperationException();
 	}
 
