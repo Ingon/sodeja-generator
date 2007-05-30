@@ -12,8 +12,8 @@ public class JavaClass implements Annotateable, AccessModifiable {
 	private List<JavaAnnotation> annotations;
 
 	private JavaAccessModifier accessModifier = JavaAccessModifier.PUBLIC;
-	private JavaType parent;
-	private List<JavaType> interfaces;
+	private JavaObjectType parent;
+	private List<JavaObjectType> interfaces;
 	
 	private List<JavaField> fields;
 	private List<JavaMethod> methods;
@@ -24,7 +24,7 @@ public class JavaClass implements Annotateable, AccessModifiable {
 		
 		imports = new ArrayList<JavaClass>();
 		annotations = new ArrayList<JavaAnnotation>();
-		interfaces = new ArrayList<JavaType>();
+		interfaces = new ArrayList<JavaObjectType>();
 		fields = new ArrayList<JavaField>();
 		methods = new ArrayList<JavaMethod>();
 	}
@@ -49,16 +49,16 @@ public class JavaClass implements Annotateable, AccessModifiable {
 		return name;
 	}
 
-	public JavaType getParent() {
+	public JavaObjectType getParent() {
 		return parent;
 	}
 
-	public void setParent(JavaType parent) {
+	public void setParent(JavaObjectType parent) {
 		autoImport(parent);
 		this.parent = parent;
 	}
 	
-	public List<JavaType> getInterfaces() {
+	public List<JavaObjectType> getInterfaces() {
 		return interfaces;
 	}
 
@@ -95,7 +95,9 @@ public class JavaClass implements Annotateable, AccessModifiable {
 	public void addMethod(JavaMethod method) {
 		autoImport(method);
 		for(JavaMethodParameter param : method.getParameters()) {
-			autoImport(param.getType());
+			if(param.getType() instanceof JavaObjectType) {
+				autoImport((JavaObjectType) param.getType());
+			}
 		}
 		methods.add(method);
 	}
@@ -104,7 +106,7 @@ public class JavaClass implements Annotateable, AccessModifiable {
 		return _package.getFullName().equals("java.lang");
 	}
 	
-	public void addInterface(JavaType inter) {
+	public void addInterface(JavaObjectType inter) {
 		if(! (inter.getBase() instanceof JavaInterface)) {
 			throw new IllegalArgumentException();
 		}
@@ -130,10 +132,12 @@ public class JavaClass implements Annotateable, AccessModifiable {
 		for(JavaAnnotation annotation : field.getAnnotations()) {
 			autoImport(annotation.getType());
 		}
-		autoImport(field.getType());
+		if(field.getType() instanceof JavaObjectType) {
+			autoImport((JavaObjectType) field.getType());
+		}
 	}
 	
-	private void autoImport(JavaType type) {
+	private void autoImport(JavaObjectType type) {
 		autoImport(type.getBase());
 		for(JavaClass param : type.getParams()) {
 			autoImport(param);

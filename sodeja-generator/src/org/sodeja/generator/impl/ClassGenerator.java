@@ -11,6 +11,7 @@ import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaMethodParameter;
+import org.sodeja.generator.java.JavaObjectType;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;
@@ -99,7 +100,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlAttribute attribute) {
-		JavaType type = ClassGeneratorUtils.getJavaType(attribute.getType());
+		JavaObjectType type = ClassGeneratorUtils.getJavaType(attribute.getType());
 		return new JavaField(type, attribute.getName());
 	}
 
@@ -114,7 +115,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaMethod createSetter(JavaField field) {
-		JavaMethod setter = new JavaMethod(new JavaType(VOID_CLASS), "set" + NamingUtils.firstUpper(field.getName()));
+		JavaMethod setter = new JavaMethod(new JavaObjectType(VOID_CLASS), "set" + NamingUtils.firstUpper(field.getName()));
 		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
 		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
 		return setter;
@@ -141,7 +142,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		}
 		
 		UmlType otherModelType = otherEnd.getReferent().getReferent();
-		JavaType type = createType(otherEnd, otherModelType);
+		JavaObjectType type = createType(otherEnd, otherModelType);
 		return new JavaField(type, otherEnd.getName());
 	}
 	
@@ -158,14 +159,14 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return ClassGeneratorUtils.createMethod(domainClass, modelOperation);
 	}
 
-	protected JavaType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
+	protected JavaObjectType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
 		JavaClass otherClass = ClassGeneratorUtils.getJavaClass(otherModelType);
 		if(otherEnd.getRange().isMulty()) {
-			JavaType type = new JavaType(getJavaClass(otherEnd.getOrdering()));
+			JavaObjectType type = new JavaObjectType(getJavaClass(otherEnd.getOrdering()));
 			type.addParameter(otherClass);
 			return type;
 		} else {
-			return new JavaType(otherClass);
+			return new JavaObjectType(otherClass);
 		}
 	}
 	
