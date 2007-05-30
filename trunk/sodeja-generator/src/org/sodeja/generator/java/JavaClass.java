@@ -3,7 +3,7 @@ package org.sodeja.generator.java;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaClass implements Annotateable, AccessModifiable {
+public class JavaClass implements JavaAnnotatedElement, AccessModifiable {
 	private JavaPackage _package;
 	private String name;
 	

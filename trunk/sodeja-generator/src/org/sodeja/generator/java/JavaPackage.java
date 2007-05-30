@@ -2,7 +2,7 @@ package org.sodeja.generator.java;
 
 import java.util.List;
 
-public class JavaPackage implements Annotateable {
+public class JavaPackage implements JavaAnnotatedElement {
 	private String name;
 	private JavaPackage parent;
 	private List<JavaAnnotation> annotations;
