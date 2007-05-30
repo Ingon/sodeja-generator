@@ -1,11 +1,11 @@
 package org.sodeja.generator.impl;
 
 import org.sodeja.collections.CollectionUtils;
-import org.sodeja.generator.java.JavaClass;
-import org.sodeja.generator.java.JavaField;
-import org.sodeja.generator.java.JavaMethod;
-import org.sodeja.generator.java.JavaPackage;
-import org.sodeja.generator.java.JavaObjectType;
+import org.sodeja.generator.java_old.JavaClass;
+import org.sodeja.generator.java_old.JavaField;
+import org.sodeja.generator.java_old.JavaMethod;
+import org.sodeja.generator.java_old.JavaObjectType;
+import org.sodeja.generator.java_old.JavaPackage;
 import org.sodeja.generator.uml.UmlAggregationType;
 import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;

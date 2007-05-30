@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.sodeja.collections.CollectionUtils;
 import org.sodeja.generator.GeneratorContext;
-import org.sodeja.generator.java.JavaClass;
-import org.sodeja.generator.java.JavaInterface;
-import org.sodeja.generator.java.JavaMethod;
-import org.sodeja.generator.java.JavaPackage;
-import org.sodeja.generator.java.JavaObjectType;
+import org.sodeja.generator.java_old.JavaClass;
+import org.sodeja.generator.java_old.JavaInterface;
+import org.sodeja.generator.java_old.JavaMethod;
+import org.sodeja.generator.java_old.JavaObjectType;
+import org.sodeja.generator.java_old.JavaPackage;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlNamespace;

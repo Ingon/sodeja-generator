@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.sodeja.generator.GeneratorContext;
-import org.sodeja.generator.java.JavaClass;
+import org.sodeja.generator.java_old.JavaClass;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlNamespace;
