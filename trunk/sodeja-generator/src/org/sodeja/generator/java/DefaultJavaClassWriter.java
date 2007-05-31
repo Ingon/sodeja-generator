@@ -88,13 +88,12 @@ public class DefaultJavaClassWriter {
 	}
 
 	private void writeAnnotation(JavaAnnotation annotation, PrintWriter out) {
-//		out.format("%s@%s(%s)", getLevelPrefix(), annotation.getType().getName(), annotation.getText());
 		out.format("%s@%s%s", getLevelPrefix(), getTypeText(annotation.getType()), getAnnotationText(annotation));
 		out.println();
 	}
 	
 	private String getAnnotationText(JavaAnnotation annotation) {
-		if(annotation.getText() == null) {
+		if(StringUtils.isTrimmedEmpty(annotation.getText())) {
 			return "";
 		}
 		return String.format("(%s)", annotation.getText());
