@@ -207,9 +207,15 @@ public class DefaultJavaClassWriter {
 	private void writeMethod(JavaMethod method, MergingJavaFile mergedContents, PrintWriter out) {
 		writeAnnotations(method, out);
 		if(method.isAbstract()) {
-			out.format("%s%s abstract%s %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
-					getMethodGenericDeclaration(method), getTypeText(method.getReturnType()), 
-					method.getName(), getParameters(method), getThrows(method));
+			if(clazz instanceof JavaInterface) {
+				out.format("%s%s%s %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
+						getMethodGenericDeclaration(method), getTypeText(method.getReturnType()), 
+						method.getName(), getParameters(method), getThrows(method));
+			} else {
+				out.format("%s%s abstract%s %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
+						getMethodGenericDeclaration(method), getTypeText(method.getReturnType()), 
+						method.getName(), getParameters(method), getThrows(method));
+			}
 			out.println();
 			return;
 		}

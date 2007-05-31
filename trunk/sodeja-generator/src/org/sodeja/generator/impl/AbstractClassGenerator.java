@@ -13,6 +13,14 @@ import org.sodeja.generator.uml.UmlModel;
 public abstract class AbstractClassGenerator extends AbstractGenerator {
 	private String sourceFolder;
 	
+	public void setSourceFolder(String sourceFolder) {
+		this.sourceFolder = sourceFolder;
+	}
+	
+	public String getSourceFolderStr() {
+		return sourceFolder;
+	}
+	
 	public File getSourceFolder() {
 		return new File(sourceFolder);
 	}
