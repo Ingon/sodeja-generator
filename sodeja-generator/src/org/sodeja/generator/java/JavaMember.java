@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JavaMember implements JavaAnnotatedElement, JavaAccessModifiable {
+	
+	private JavaClass owner;
 	private JavaAccessModifier accessModifier = JavaAccessModifier.PRIVATE;
 	private List<JavaAnnotation> annotations;
 	
@@ -11,6 +13,10 @@ public class JavaMember implements JavaAnnotatedElement, JavaAccessModifiable {
 		this.annotations = new ArrayList<JavaAnnotation>();
 	}
 	
+	public JavaClass getOwner() {
+		return owner;
+	}
+
 	@Override
 	public List<JavaAnnotation> getAnnotations() {
 		return annotations;
@@ -34,5 +40,12 @@ public class JavaMember implements JavaAnnotatedElement, JavaAccessModifiable {
 
 	public void setAccessModifier(JavaAccessModifier accessModifier) {
 		this.accessModifier = accessModifier;
+	}
+	
+	void setOwner(JavaClass owner) {
+		if(this.owner != null) {
+			throw new IllegalStateException();
+		}
+		this.owner = owner;
 	}
 }

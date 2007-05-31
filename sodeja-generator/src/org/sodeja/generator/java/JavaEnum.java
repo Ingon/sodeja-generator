@@ -12,6 +12,16 @@ public class JavaEnum extends JavaClass {
 		values = new ArrayList<String>();
 	}
 
+	@Override
+	public List<JavaTypeVariable> getTypeParameters() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setParent(JavaClass parent) {
+		throw new UnsupportedOperationException();
+	}
+	
 	public List<String> getValues() {
 		return values;
 	}

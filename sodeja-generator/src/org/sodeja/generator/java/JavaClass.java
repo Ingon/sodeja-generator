@@ -3,7 +3,7 @@ package org.sodeja.generator.java;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable {
+public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable, JavaGenericDeclaration {
 	private JavaPackage _package;
 	
 	private List<JavaClass> imports;
@@ -12,24 +12,22 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 
 	private JavaAccessModifier accessModifier = JavaAccessModifier.PUBLIC;
 	private String name;
+	private List<JavaTypeVariable> typeParameters;
 	
 	private JavaClass parent;
 	private List<JavaInterface> interfaces;
 	
 	private List<JavaMember> members;
-//	private List<JavaField> fields;
-//	private List<JavaMethod> methods;
 	
 	public JavaClass(JavaPackage _package, String name) {
 		this._package = _package;
 		this.name = name;
+		this.typeParameters = new ArrayList<JavaTypeVariable>();
 		
-		imports = new ArrayList<JavaClass>();
-		annotations = new ArrayList<JavaAnnotation>();
-		interfaces = new ArrayList<JavaInterface>();
-		members = new ArrayList<JavaMember>();
-//		fields = new ArrayList<JavaField>();
-//		methods = new ArrayList<JavaMethod>();
+		this.imports = new ArrayList<JavaClass>();
+		this.annotations = new ArrayList<JavaAnnotation>();
+		this.interfaces = new ArrayList<JavaInterface>();
+		this.members = new ArrayList<JavaMember>();
 	}
 	
 	public JavaPackage getPackage() {
@@ -50,6 +48,10 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 
 	public String getName() {
 		return name;
+	}
+
+	public List<JavaTypeVariable> getTypeParameters() {
+		return typeParameters;
 	}
 
 	public JavaClass getParent() {
@@ -81,7 +83,7 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	public void addAnnotation(JavaClass clazz, String value) {
 		addAnnotation(new JavaAnnotation(clazz, value));
 	}
-	
+
 	public List<JavaField> getFields() {
 		List<JavaField> result = new ArrayList<JavaField>();
 		for(JavaMember member : members) {
@@ -91,11 +93,11 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		}
 		
 		return result;
-//		return Collections.unmodifiableList(fields);
 	}
 
 	public void addField(JavaField field) {
 		autoImport(field);
+		field.setOwner(this);
 		members.add(field);
 	}
 	
@@ -108,11 +110,11 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		}
 		
 		return result;
-//		return Collections.unmodifiableList(methods);
 	}
 	
 	public void addMethod(JavaMethod method) {
 		autoImport(method);
+		method.setOwner(this);
 		members.add(method);
 	}
 
@@ -129,6 +131,7 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	
 	public void addConstructor(JavaConstructor constructor) {
 		autoImport(constructor);
+		constructor.setOwner(this);
 		members.add(constructor);
 	}
 	

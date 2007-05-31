@@ -3,13 +3,14 @@ package org.sodeja.generator.java;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaMethod extends JavaMember {
+public class JavaMethod extends JavaMember implements JavaGenericDeclaration, JavaContent {
 	// Access flags
 	private boolean isStatic;
 	private boolean isAbstract;
 	
 	private JavaType returnType;
 	private String name;
+	private List<JavaTypeVariable> typeParameters;
 	
 	private List<JavaMethodParameter> parameters;
 	private List<JavaClass> exceptions;
@@ -25,8 +26,11 @@ public class JavaMethod extends JavaMember {
 	public JavaMethod(JavaType returnType, String name, List<JavaMethodParameter> parameters) {
 		this.returnType = returnType;
 		this.name = name;
+		this.typeParameters = new ArrayList<JavaTypeVariable>();
+		
 		this.parameters = parameters;
 		this.exceptions = new ArrayList<JavaClass>();
+		
 		this.content = "";
 	}
 	
@@ -41,28 +45,7 @@ public class JavaMethod extends JavaMember {
 	public List<JavaClass> getExceptions() {
 		return exceptions;
 	}
-
-	public void setCustom(String customId) {
-		this.customId = customId;
-		this.customContent = true;
-	}
 	
-	public String getCustomId() {
-		return customId;
-	}
-
-	public boolean isCustomContent() {
-		return customContent;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
 	public void addParameter(JavaMethodParameter parameter) {
 		parameters.add(parameter);
 	}
@@ -85,5 +68,38 @@ public class JavaMethod extends JavaMember {
 
 	public String getName() {
 		return name;
+	}
+
+	public List<JavaTypeVariable> getTypeParameters() {
+		return typeParameters;
+	}
+
+	@Override
+	public String getContent() {
+		return content;
+	}
+	
+	@Override
+	public String getCustomId() {
+		return customId;
+	}
+	
+	@Override
+	public boolean isCustomContent() {
+		return customContent;
+	}
+	
+	@Override
+	public void setCustom(String customId) {
+		this.customContent = true;
+		this.customId = customId;
+		this.content = null;
+	}
+
+	@Override
+	public void setContent(String content) {
+		this.customContent = false;
+		this.customId = null;
+		this.content = content;
 	}
 }

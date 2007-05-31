@@ -41,7 +41,7 @@ public class DefaultJavaClassWriter {
 			writeValues(((JavaEnum) clazz).getValues(), out);
 		}
 		writeFields(clazz.getFields(), out);
-		writeConstructors(clazz.getConstructors(), out);
+		writeConstructors(clazz.getConstructors(), mergedContents, out);
 		writeMethods(clazz.getMethods(), mergedContents, out);
 		level = 0;
 		
@@ -53,9 +53,9 @@ public class DefaultJavaClassWriter {
 		if(clazz instanceof JavaEnum) {
 			out.format("%s enum %s {", getAccess(clazz), clazz.getName());
 		} else if(clazz instanceof JavaInterface) {
-			out.format("%s interface %s%s {", getAccess(clazz), clazz.getName(), getInterfaceExtends());
+			out.format("%s interface%s %s%s {", getAccess(clazz), getGenericDeclaration(clazz), clazz.getName(), getInterfaceExtends());
 		} else if(clazz instanceof JavaClass) {
-			out.format("%s class %s%s%s {", getAccess(clazz), clazz.getName(), getExtends(), getImplements());
+			out.format("%s class%s %s%s%s {", getAccess(clazz), getGenericDeclaration(clazz), clazz.getName(), getExtends(), getImplements());
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -165,20 +165,31 @@ public class DefaultJavaClassWriter {
 		out.println();
 	}
 	
-	private void writeConstructors(List<JavaConstructor> constructors, PrintWriter out) {
+	private void writeConstructors(List<JavaConstructor> constructors, MergingJavaFile mergedContents, PrintWriter out) {
 		if(CollectionUtils.isEmpty(constructors)) {
 			return;
 		}
 
 		for(JavaConstructor constructor : constructors) {
-			writeConstructor(constructor, out);
+			writeConstructor(constructor, mergedContents, out);
 		}
 	}
 
-	private void writeConstructor(JavaConstructor constructor, PrintWriter out) {
+	private void writeConstructor(JavaConstructor constructor, MergingJavaFile mergedContents, PrintWriter out) {
 		writeAnnotations(constructor, out);
 		
 		// TODO there is still logic to be added.
+		out.format("%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(constructor), getGenericDeclaration(constructor),
+				clazz.getName(), getParameters(constructor), getThrows(constructor));
+		
+		out.println();
+		
+		writeCustomContent(constructor, mergedContents, out);
+
+		out.println();
+		out.format("%s}", getLevelPrefix());
+		out.println();
+		out.println();
 	}
 
 	private void writeMethods(List<JavaMethod> methods, MergingJavaFile mergedContents, PrintWriter out) {
@@ -194,32 +205,19 @@ public class DefaultJavaClassWriter {
 	private void writeMethod(JavaMethod method, MergingJavaFile mergedContents, PrintWriter out) {
 		writeAnnotations(method, out);
 		if(method.isAbstract()) {
-			out.format("%s%s abstract %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
-					getTypeText(method.getReturnType()), method.getName(), getParameters(method), getThrows(method));
+			out.format("%s%s abstract %s %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
+					getGenericDeclaration(method), getTypeText(method.getReturnType()), 
+					method.getName(), getParameters(method), getThrows(method));
 			out.println();
 			return;
 		}
 		
-		out.format("%s%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), getTypeText(method.getReturnType()), 
+		out.format("%s%s%s %s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), 
+				getGenericDeclaration(method), getTypeText(method.getReturnType()), 
 				method.getName(), getParameters(method), getThrows(method));
 		out.println();
 		
-		if(method.isCustomContent()) {
-			out.format(START_PREFIX + "<%s>\r\n", method.getCustomId());
-			out.append(mergedContents.getFunctionContent(method.getCustomId()));
-			out.format(END_PREFIX + "<%s>", method.getCustomId());
-		} else {
-			level = 8;
-			String[] content = method.getContent().split("\r\n");
-			for(int i = 0, n = content.length;i < n;i++) {
-				String contentLine = content[i];
-				out.format("%s%s", getLevelPrefix(), contentLine);
-				if(i + 1 < n) {
-					out.println();
-				}
-			}
-			level = 4;
-		}
+		writeCustomContent(method, mergedContents, out);
 		
 		out.println();
 		out.format("%s}", getLevelPrefix());
@@ -238,13 +236,81 @@ public class DefaultJavaClassWriter {
 		}
 	}
 
-	private String getParameters(JavaMethod method) {
-		if(CollectionUtils.isEmpty(method.getParameters())) {
+	private void writeCustomContent(JavaContent customContent, MergingJavaFile mergedContents, PrintWriter out) {
+		if(customContent.isCustomContent()) {
+			out.format(START_PREFIX + "<%s>\r\n", customContent.getCustomId());
+			out.append(mergedContents.getFunctionContent(customContent.getCustomId()));
+			out.format(END_PREFIX + "<%s>", customContent.getCustomId());
+		} else {
+			level = 8;
+			String[] content = customContent.getContent().split("\r\n");
+			for(int i = 0, n = content.length;i < n;i++) {
+				String contentLine = content[i];
+				out.format("%s%s", getLevelPrefix(), contentLine);
+				if(i + 1 < n) {
+					out.println();
+				}
+			}
+			level = 4;
+		}
+	}
+
+	private String getGenericDeclaration(JavaGenericDeclaration declaration) {
+		if(CollectionUtils.isEmpty(declaration.getTypeParameters())) {
 			return "";
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		for(Iterator<JavaMethodParameter> ite = method.getParameters().iterator();ite.hasNext();) {
+		sb.append("<");
+		for(Iterator<JavaTypeVariable> ite = declaration.getTypeParameters().iterator();ite.hasNext();) {
+			JavaTypeVariable parameter = ite.next();
+			writeTypeVariable(parameter, sb);
+			
+			if(ite.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		sb.append(">");
+		
+		return sb.toString();
+	}
+	
+	private void writeTypeVariable(JavaTypeVariable parameter, StringBuilder sb) {
+		sb.append(parameter.getName());
+		
+		if(parameter.getBound() == null) {
+			if(! CollectionUtils.isEmpty(parameter.getAdditionalBounds())) {
+				throw new RuntimeException("Type bound is obligatory if you have additional bounds");
+			}
+			return;
+		}
+		
+		sb.append(String.format(" extends %s", getTypeText(parameter.getBound())));
+		
+		if(CollectionUtils.isEmpty(parameter.getAdditionalBounds())) {
+			return;
+		}
+		
+		for(JavaInterface bound : parameter.getAdditionalBounds()) {
+			sb.append(String.format(" & %s", getTypeText(bound)));
+		}
+	}
+	
+	private String getParameters(JavaConstructor constructor) {
+		return getParametersString(constructor.getParameters());
+	}
+	
+	private String getParameters(JavaMethod method) {
+		return getParametersString(method.getParameters());
+	}
+
+	private String getParametersString(List<JavaMethodParameter> parameters) {
+		if(CollectionUtils.isEmpty(parameters)) {
+			return "";
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		for(Iterator<JavaMethodParameter> ite = parameters.iterator();ite.hasNext();) {
 			JavaMethodParameter param = ite.next();
 			sb.append(String.format("%s %s", getTypeText(param.getType()), param.getName()));
 			if(ite.hasNext()) {
@@ -255,14 +321,22 @@ public class DefaultJavaClassWriter {
 		return sb.toString();
 	}
 
+	private String getThrows(JavaConstructor constructor) {
+		return getThrows(constructor.getExceptions());
+	}
+	
 	private String getThrows(JavaMethod method) {
-		if(CollectionUtils.isEmpty(method.getExceptions())) {
+		return getThrows(method.getExceptions());
+	}
+	
+	private String getThrows(List<JavaClass> exceptions) {
+		if(CollectionUtils.isEmpty(exceptions)) {
 			return "";
 		}
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append(" throws ");
-		for(Iterator<JavaClass> ite = method.getExceptions().iterator();ite.hasNext();) {
+		for(Iterator<JavaClass> ite = exceptions.iterator();ite.hasNext();) {
 			JavaClass param = ite.next();
 			sb.append(getTypeText(param));
 			if(ite.hasNext()) {
