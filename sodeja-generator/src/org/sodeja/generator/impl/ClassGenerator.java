@@ -64,7 +64,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlInterface modelInterface) {
-		JavaPackage domainPackage = JavaPackage.createFromDots(modelInterface.getParentNamespace().getFullName());
+		JavaPackage domainPackage = ClassGeneratorUtils.getJavaPackage(modelInterface.getParentNamespace());
 		JavaInterface domainClass = createJavaInterface(domainPackage, model, modelInterface);
 		
 		createOperations(domainClass, model, modelInterface);
@@ -89,7 +89,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlEnumeration modelEnumeration) {
-		JavaPackage domainPackage = JavaPackage.createFromDots(modelEnumeration.getParentNamespace().getFullName());
+		JavaPackage domainPackage = ClassGeneratorUtils.getJavaPackage(modelEnumeration.getParentNamespace());
 		JavaEnum domainClass = createJavaEnum(domainPackage, model, modelEnumeration);
 		writeClass(domainClass);
 	}
@@ -103,7 +103,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 	
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {
-		JavaPackage domainPackage = JavaPackage.createFromDots(modelClass.getParentNamespace().getFullName());
+		JavaPackage domainPackage = ClassGeneratorUtils.getJavaPackage(modelClass.getParentNamespace());
 		JavaClass domainClass = createClass(domainPackage, model, modelClass);
 		writeClass(domainClass);
 	}

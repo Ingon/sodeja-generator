@@ -13,6 +13,7 @@ import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
 import org.sodeja.generator.uml.UmlEnumeration;
 import org.sodeja.generator.uml.UmlInterface;
+import org.sodeja.generator.uml.UmlNamespace;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOwnerScope;
 import org.sodeja.generator.uml.UmlParameter;
@@ -79,17 +80,21 @@ public class ClassGeneratorUtils {
 	}
 	
 	protected static JavaClass getJavaClass(UmlClass modelClass) {
-		JavaPackage pack = JavaPackage.createFromDots(modelClass.getParentNamespace().getFullName());
+		JavaPackage pack = getJavaPackage(modelClass.getParentNamespace());
 		return new JavaClass(pack, modelClass.getName());
 	}
 
 	protected static JavaInterface getJavaClass(UmlInterface modelInterface) {
-		JavaPackage pack = JavaPackage.createFromDots(modelInterface.getParentNamespace().getFullName());
+		JavaPackage pack = getJavaPackage(modelInterface.getParentNamespace());
 		return new JavaInterface(pack, modelInterface.getName());
 	}
 	
 	protected static JavaEnum getJavaClass(UmlEnumeration modelEnumeration) {
-		JavaPackage pack = JavaPackage.createFromDots(modelEnumeration.getParentNamespace().getFullName());
+		JavaPackage pack = getJavaPackage(modelEnumeration.getParentNamespace());
 		return new JavaEnum(pack, modelEnumeration.getName());
+	}
+	
+	protected static JavaPackage getJavaPackage(UmlNamespace namespace) {
+		return JavaPackage.createFromDots(namespace.getFullName());
 	}
 }
