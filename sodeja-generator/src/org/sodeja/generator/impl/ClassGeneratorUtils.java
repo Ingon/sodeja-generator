@@ -1,5 +1,7 @@
 package org.sodeja.generator.impl;
 
+import java.util.List;
+
 import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
@@ -21,6 +23,13 @@ import org.sodeja.generator.uml.UmlReference;
 import org.sodeja.generator.uml.UmlType;
 
 public class ClassGeneratorUtils {
+	public static void addOperations(List<UmlOperation> modelDaoOperations, JavaClass type) {
+		for(UmlOperation modelOperation : modelDaoOperations) {
+			JavaMethod method = createMethod(type, modelOperation);
+			type.addMethod(method);
+		}
+	}
+	
 	public static JavaMethod createMethod(JavaClass domainClass, UmlOperation modelOperation) {
 		JavaType resultType = getParameterType(modelOperation.getResult());
 		JavaMethod method = new JavaMethod(resultType, modelOperation.getName());
@@ -79,17 +88,17 @@ public class ClassGeneratorUtils {
 		}
 	}
 	
-	protected static JavaClass getJavaClass(UmlClass modelClass) {
+	public static JavaClass getJavaClass(UmlClass modelClass) {
 		JavaPackage pack = getJavaPackage(modelClass.getParentNamespace());
 		return new JavaClass(pack, modelClass.getName());
 	}
 
-	protected static JavaInterface getJavaClass(UmlInterface modelInterface) {
+	public static JavaInterface getJavaClass(UmlInterface modelInterface) {
 		JavaPackage pack = getJavaPackage(modelInterface.getParentNamespace());
 		return new JavaInterface(pack, modelInterface.getName());
 	}
 	
-	protected static JavaEnum getJavaClass(UmlEnumeration modelEnumeration) {
+	public static JavaEnum getJavaClass(UmlEnumeration modelEnumeration) {
 		JavaPackage pack = getJavaPackage(modelEnumeration.getParentNamespace());
 		return new JavaEnum(pack, modelEnumeration.getName());
 	}
