@@ -5,13 +5,11 @@ import java.util.List;
 import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
 import org.sodeja.generator.GeneratorContext;
-import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
-import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameterizedType;
 import org.sodeja.generator.java.JavaType;
@@ -192,22 +190,15 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaMethod createGetter(JavaField field) {
-		return createGetter(field.getName(), field.getType());
+		return ClassGeneratorUtils.createGetter(field);
 	}
 
 	protected JavaMethod createGetter(String name, JavaType type) {
-		JavaMethod getter = new JavaMethod(type, "get" + NamingUtils.firstUpper(name));
-		getter.setAccessModifier(JavaAccessModifier.PUBLIC);
-		getter.setContent(String.format("return this.%s;", name));
-		return getter;
+		return ClassGeneratorUtils.createGetter(name, type);
 	}
 
 	protected JavaMethod createSetter(JavaField field) {
-		JavaMethod setter = new JavaMethod(VOID_CLASS, "set" + NamingUtils.firstUpper(field.getName()));
-		setter.setAccessModifier(JavaAccessModifier.PUBLIC);
-		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
-		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
-		return setter;
+		return ClassGeneratorUtils.createSetter(field);
 	}
 
 	protected void createAssociations(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
