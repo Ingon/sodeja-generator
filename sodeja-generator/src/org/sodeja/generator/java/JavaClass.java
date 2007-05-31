@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.sodeja.collections.CollectionUtils;
 
-public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable, JavaGenericDeclaration {
+public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable, 
+		JavaGenericDeclaration {
+	
 	private JavaPackage _package;
 	
 	private List<JavaClass> imports;
@@ -17,8 +19,10 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	private String name;
 	private List<JavaTypeVariable> typeParameters;
 	
-	private JavaClass parent;
-	private List<JavaInterface> interfaces;
+//	private JavaClass parent;
+//	private List<JavaInterface> interfaces;
+	private JavaType parent;
+	private List<JavaType> interfaces;
 	
 	private List<JavaMember> members;
 	
@@ -29,7 +33,8 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		
 		this.imports = new ArrayList<JavaClass>();
 		this.annotations = new ArrayList<JavaAnnotation>();
-		this.interfaces = new ArrayList<JavaInterface>();
+//		this.interfaces = new ArrayList<JavaInterface>();
+		this.interfaces = new ArrayList<JavaType>();
 		this.members = new ArrayList<JavaMember>();
 	}
 	
@@ -68,19 +73,52 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		typeParameters.add(param);
 	}
 
-	public JavaClass getParent() {
+//	public JavaClass getParent() {
+//		return parent;
+//	}
+	public JavaType getParent() {
 		return parent;
 	}
 
 	public void setParent(JavaClass parent) {
+		if(parent.getClass() != JavaClass.class) {
+			throw new IllegalArgumentException();
+		}
+		
 		autoImport(parent);
 		this.parent = parent;
 	}
 	
-	public List<JavaInterface> getInterfaces() {
-		return interfaces;
+	public void setParent(JavaParameterizedType parent) {
+		if(parent.getType().getClass() != JavaClass.class) {
+			throw new IllegalArgumentException();
+		}
+		
+		autoImport(parent);
+		this.parent = parent;
+	}
+	
+//	public List<JavaInterface> getInterfaces() {
+//		return interfaces;
+//	}
+	public List<JavaType> getInterfaces() {
+		return Collections.unmodifiableList(interfaces);
 	}
 
+	public void addInterface(JavaInterface inter) {
+		autoImport(inter);
+		interfaces.add(inter);
+	}
+	
+	public void addInterface(JavaParameterizedType inter) {
+		if(inter.getType().getClass() != JavaInterface.class) {
+			throw new IllegalArgumentException();
+		}
+		
+		autoImport(inter);
+		interfaces.add(inter);
+	}
+	
 	public List<JavaAnnotation> getAnnotations() {
 		return annotations;
 	}
@@ -149,11 +187,6 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		members.add(constructor);
 	}
 	
-	public void addInterface(JavaInterface inter) {
-		autoImport(inter);
-		interfaces.add(inter);
-	}
-	
 	public boolean isSystem() {
 		return _package.getFullName().equals("java.lang");
 	}
@@ -175,17 +208,13 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	private void autoImport(JavaMethod method) {
 		autoImportTypeParameters(method);
 		autoImportMember(method);
-		if(method.getReturnType() instanceof JavaClass) {
-			autoImport((JavaClass) method.getReturnType());
-		}
+		autoImport(method.getReturnType());
 		autoImportParameters(method.getParameters());
 	}
 
 	private void autoImport(JavaField field) {
 		autoImportMember(field);
-		if(field.getType() instanceof JavaClass) {
-			autoImport((JavaClass) field.getType());
-		}
+		autoImport(field.getType());
 	}
 	
 	private void autoImport(JavaConstructor constructor) {
@@ -211,9 +240,7 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	
 	private void autoImportParameters(List<JavaMethodParameter> params) {
 		for(JavaMethodParameter param : params) {
-			if(param.getType() instanceof JavaClass) {
-				autoImport((JavaClass) param.getType());
-			}
+			autoImport(param.getType());
 		}
 	}
 	
@@ -229,6 +256,22 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		}
 	}
 	
+	private void autoImport(JavaType type) {
+		if(type instanceof JavaClass) {
+			autoImport((JavaClass) type);
+		} else if(type instanceof JavaPrimitiveType) {
+			return;
+		} else if(type instanceof JavaTypeVariableReference) {
+			return;
+		} else if(type instanceof JavaWildcardType) {
+			autoImport((JavaWildcardType) type);
+		} else if(type instanceof JavaParameterizedType) {
+			autoImport((JavaParameterizedType) type);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	private void autoImport(JavaClass clazz) {
 		if(clazz._package == null) {
 			return;
@@ -244,5 +287,21 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 			}
 		}
 		imports.add(clazz);
+	}
+
+	private void autoImport(JavaWildcardType wildcard) {
+		if(wildcard.getLowerBounds() != null) {
+			autoImport(wildcard.getLowerBounds());
+		}
+		if(wildcard.getUpperBounds() != null) {
+			autoImport(wildcard.getUpperBounds());
+		}
+	}
+	
+	private void autoImport(JavaParameterizedType type) {
+		autoImport(type.getType());
+		for(JavaType typeArgument : type.getTypeArguments()) {
+			autoImport(typeArgument);
+		}
 	}
 }

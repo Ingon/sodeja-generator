@@ -414,8 +414,8 @@ public class DefaultJavaClassWriter {
 		return sb.toString();
 	}
 	
-	private void addWithSeparators(StringBuilder sb, List<JavaInterface> classes) {
-		for(Iterator<JavaInterface> ite = classes.iterator();ite.hasNext();) {
+	private void addWithSeparators(StringBuilder sb, List<JavaType> types) {
+		for(Iterator<JavaType> ite = types.iterator();ite.hasNext();) {
 			sb.append(getTypeText(ite.next()));
 			if(ite.hasNext()) {
 				sb.append(", ");
@@ -443,29 +443,14 @@ public class DefaultJavaClassWriter {
 			return ((JavaPrimitiveType) type).name().toLowerCase();
 		} else if(type instanceof JavaTypeVariableReference) {
 			return ((JavaTypeVariableReference) type).getName();
+		} else if(type instanceof JavaWildcardType) {
+			return getTypeText((JavaWildcardType) type);
+		} else if(type instanceof JavaParameterizedType) {
+			return getTypeText((JavaParameterizedType) type);
 		} else {
 			throw new IllegalArgumentException();
 		}
 	}
-	
-//	private String getObjectTypeText(JavaClass type) {
-//		if(CollectionUtils.isEmpty(type.getParams())) {
-//			return getTypeText(type.getBase());
-//		}
-//		
-//		StringBuilder sb = new StringBuilder();
-//		sb.append(getTypeText(type.getBase()));
-//		sb.append("<");
-//		for(Iterator<JavaClass> ite = type.getParams().iterator();ite.hasNext();) {
-//			JavaClass clazz = ite.next();
-//			sb.append(getTypeText(clazz));
-//			if(ite.hasNext()) {
-//				sb.append(", ");
-//			}
-//		}
-//		sb.append(">");
-//		return sb.toString();
-//	}
 	
 	private String getTypeText(JavaClass type) {
 		if(type.getPackage() == null) {
@@ -488,5 +473,34 @@ public class DefaultJavaClassWriter {
 		}
 		
 		return String.format("%s.%s", type.getPackage().getFullName(), type.getName());
+	}
+	
+	private String getTypeText(JavaWildcardType type) {
+		if(type.getLowerBounds() != null) {
+			return String.format("? super %s", getTypeText(type.getLowerBounds()));
+		} else if(type.getUpperBounds() != null) {
+			return String.format("? extends %s", getTypeText(type.getUpperBounds()));
+		} else {
+			return "?";
+		}
+	}
+	
+	private String getTypeText(JavaParameterizedType type) {
+		if(CollectionUtils.isEmpty(type.getTypeArguments())) {
+			return getTypeText(type.getType());
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(getTypeText(type.getType()));
+		sb.append("<");
+		for(Iterator<JavaType> ite = type.getTypeArguments().iterator();ite.hasNext();) {
+			JavaType clazz = ite.next();
+			sb.append(getTypeText(clazz));
+			if(ite.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		sb.append(">");
+		return sb.toString();
 	}
 }

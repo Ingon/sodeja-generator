@@ -11,6 +11,7 @@ import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
+import org.sodeja.generator.java.JavaParameterizedType;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;
@@ -160,7 +161,10 @@ public class ClassGenerator extends AbstractClassGenerator {
 
 	protected JavaType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
 		if(otherEnd.getRange().isMulty()) {
-			return getJavaClass(otherEnd.getOrdering());
+			JavaClass baseClass = getJavaClass(otherEnd.getOrdering());
+			JavaParameterizedType type = new JavaParameterizedType(baseClass);
+			type.getTypeArguments().add(ClassGeneratorUtils.getJavaClass(otherModelType));
+			return type;
 		} else {
 			return ClassGeneratorUtils.getJavaClass(otherModelType);
 		}

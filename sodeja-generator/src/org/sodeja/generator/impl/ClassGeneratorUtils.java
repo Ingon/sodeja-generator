@@ -5,6 +5,7 @@ import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
+import org.sodeja.generator.java.JavaParameterizedType;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
@@ -38,6 +39,12 @@ public class ClassGeneratorUtils {
 			return baseClass;
 		}
 		
+		JavaParameterizedType type = new JavaParameterizedType(getMultyType(value));
+		type.getTypeArguments().add(baseClass);
+		return type;
+	}
+	
+	protected static JavaClass getMultyType(String value) {
 		if(value.equals("list")) {
 			return ClassGenerator.LIST_CLASS;
 		} else if(value.equals("collection")) {
