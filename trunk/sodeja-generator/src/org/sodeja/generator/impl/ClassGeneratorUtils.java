@@ -21,7 +21,7 @@ import org.sodeja.generator.uml.UmlReference;
 import org.sodeja.generator.uml.UmlType;
 
 public class ClassGeneratorUtils {
-	protected static JavaMethod createMethod(JavaClass domainClass, UmlOperation modelOperation) {
+	public static JavaMethod createMethod(JavaClass domainClass, UmlOperation modelOperation) {
 		JavaType resultType = getParameterType(modelOperation.getResult());
 		JavaMethod method = new JavaMethod(resultType, modelOperation.getName());
 		method.setAccessModifier(JavaAccessModifier.PUBLIC);

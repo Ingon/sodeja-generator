@@ -64,6 +64,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlInterface modelInterface) {
+		// TODO refactor to use ClassGeneratorUtils
 		JavaPackage domainPackage = ClassGeneratorUtils.getJavaPackage(modelInterface.getParentNamespace());
 		JavaInterface domainClass = createJavaInterface(domainPackage, model, modelInterface);
 		
