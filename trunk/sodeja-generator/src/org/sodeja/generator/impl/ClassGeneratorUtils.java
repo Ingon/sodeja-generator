@@ -83,12 +83,12 @@ public class ClassGeneratorUtils {
 		return new JavaClass(pack, modelClass.getName());
 	}
 
-	protected static JavaClass getJavaClass(UmlInterface modelInterface) {
+	protected static JavaInterface getJavaClass(UmlInterface modelInterface) {
 		JavaPackage pack = JavaPackage.createFromDots(modelInterface.getParentNamespace().getFullName());
 		return new JavaInterface(pack, modelInterface.getName());
 	}
 	
-	protected static JavaClass getJavaClass(UmlEnumeration modelEnumeration) {
+	protected static JavaEnum getJavaClass(UmlEnumeration modelEnumeration) {
 		JavaPackage pack = JavaPackage.createFromDots(modelEnumeration.getParentNamespace().getFullName());
 		return new JavaEnum(pack, modelEnumeration.getName());
 	}
