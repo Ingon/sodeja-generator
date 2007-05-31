@@ -108,6 +108,26 @@ public abstract class UmlNamespace extends UmlElement {
 		return result;
 	}
 	
+	public List<UmlEnumeration> findEnumerationsByStereotype(String name) {
+		List<UmlEnumeration> result = new ArrayList<UmlEnumeration>();
+		
+		for(UmlEnumeration clazz : this.enumerations) {
+			if(CollectionUtils.isEmpty(clazz.getStereotypes())) {
+				continue;
+			}
+			
+			if(clazz.hasStereotype(name)) {
+				result.add(clazz);
+			}
+		}
+		
+		for(UmlNamespace child : children) {
+			result.addAll(child.findEnumerationsByStereotype(name));
+		}
+		
+		return result;
+	}
+	
 	public List<UmlAssociation> findAssociations(UmlClass clazz) {
 		List<UmlAssociation> result = new ArrayList<UmlAssociation>();
 		for(UmlAssociation association : associations) {
@@ -153,6 +173,10 @@ public abstract class UmlNamespace extends UmlElement {
 			result = findById(getClasses(), id);
 		} else if(clazz == UmlInterface.class) {
 			result = findById(getInterfaces(), id);
+		} else if(clazz == UmlEnumeration.class) {
+			result = findById(getEnumerations(), id);
+		} else if(clazz == UmlDependency.class) {
+			result = findById(getDependencies(), id);
 		} else {
 			throw new UnsupportedOperationException();
 		}

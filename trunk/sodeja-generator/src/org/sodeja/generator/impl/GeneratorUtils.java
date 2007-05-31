@@ -4,6 +4,7 @@ import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlGeneralization;
+import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlParameter;
 import org.sodeja.generator.uml.UmlTagDefinition;
@@ -53,6 +54,14 @@ public class GeneratorUtils {
 	private static boolean isDomainObject(UmlClass modelClass, String stereotype) {
 		return modelClass.hasStereotype(stereotype);
 //		return modelClass.getStereotype().getReferent().getName().equals(stereotype);
+	}
+	
+	public static boolean isParent(UmlModel model, UmlClass modelClass) {
+		return ! model.findPerentGeneralizations(modelClass).isEmpty();
+	}
+
+	public static boolean isNotRootParent(UmlModel model, UmlClass modelClass) {
+		return isParent(model, modelClass) && ! (CollectionUtils.isEmpty(modelClass.getGeneralizations())); //modelClass.getParent() != null
 	}
 	
 	protected static boolean isSet(UmlTaggableElement taggable, String tagName) {

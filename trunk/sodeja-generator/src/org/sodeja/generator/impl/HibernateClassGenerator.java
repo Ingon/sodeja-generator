@@ -1,6 +1,5 @@
 package org.sodeja.generator.impl;
 
-import org.sodeja.collections.CollectionUtils;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaMethod;
@@ -10,6 +9,8 @@ import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlClass;
+import org.sodeja.generator.uml.UmlDependency;
+import org.sodeja.generator.uml.UmlEnumeration;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlType;
@@ -78,6 +79,9 @@ public class HibernateClassGenerator extends ClassGenerator {
 			} else {
 				field.addAnnotation(PERSISTANCE_BASIC);
 			}
+		} else if(otherType instanceof UmlEnumeration) {
+			domainClass.addImport(PERSISTANCE_ENUM_TYPE);
+			field.addAnnotation(PERSISTANCE_ENUMERATED, "EnumType.STRING");
 		} else {
 			field.addAnnotation(PERSISTANCE_BASIC);
 		}
@@ -95,31 +99,41 @@ public class HibernateClassGenerator extends ClassGenerator {
 		UmlAssociationEnd thisModelEnd = modelAssociation.getThisEnd(modelClass);
 		UmlAssociationEnd otherModelEnd = modelAssociation.getOtherEnd(modelClass);
 		UmlClass otherModelClass = (UmlClass) otherModelEnd.getReferent().getReferent();
+		
 		if(GeneratorUtils.isEmbedded(otherModelClass)) {
 			field.addAnnotation(PERSISTANCE_EMBEDDED);
 		} else if(GeneratorUtils.isEnum(otherModelClass)) {
-			domainClass.addImport(PERSISTANCE_ENUM_TYPE);
-			field.addAnnotation(PERSISTANCE_ENUMERATED, "EnumType.STRING");
+			throw new IllegalArgumentException("Implementation changed to use a UmlEnumeration type");
+//			domainClass.addImport(PERSISTANCE_ENUM_TYPE);
+//			field.addAnnotation(PERSISTANCE_ENUMERATED, "EnumType.STRING");
 		} else if(otherModelEnd.getRange().isMulty()) {
 			if(thisModelEnd.getType() == UmlAggregationType.COMPOSITE) {
-				field.addAnnotation(PERSISTANCE_ONE_TO_MANY);
+				field.addAnnotation(PERSISTANCE_ONE_TO_MANY, getTargetEntryString(modelClass, otherModelClass));
 				field.addAnnotation(HIBERNATE_INDEX_COLUMN, "name=\"number_in_row\"");
 				field.addAnnotation(HIBERNATE_CASCADE, "value={org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN}");
 			} else {
-				field.addAnnotation(PERSISTANCE_MANY_TO_MANY);
+				field.addAnnotation(PERSISTANCE_MANY_TO_MANY, getTargetEntryString(modelClass, otherModelClass));
 				field.addAnnotation(HIBERNATE_INDEX_COLUMN, "name=\"number_in_row\"");
 			}
 		} else if(thisModelEnd.getType() == UmlAggregationType.COMPOSITE) {
 			domainClass.addImport(PERSISTANCE_CASCADE_TYPE);
-			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, "cascade=CascadeType.ALL");
+			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, "cascade=CascadeType.ALL, " + getTargetEntryString(modelClass, otherModelClass));
 		} else if(thisModelEnd.getRange().isMulty()) {
 			field.addAnnotation(PERSISTANCE_MANY_TO_ONE);
 		} else {
-			field.addAnnotation(PERSISTANCE_ONE_TO_ONE);
+			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, getTargetEntryString(modelClass, otherModelClass));
 		}
 		return field;
 	}
 
+	private String getTargetEntryString(UmlClass modelClass, UmlClass otherModelClass) {
+		UmlDependency dependency = getDependency(modelClass, otherModelClass);
+		if(dependency == null) {
+			return "";
+		}
+		return "targetEntity=" + ClassGeneratorUtils.getJavaClass(otherModelClass).getName() + ".class";
+	}
+	
 	@Override
 	protected JavaMethod createMethod(JavaClass domainClass, UmlModel model, UmlOperation modelOperation) {
 		if(GeneratorUtils.isDao(modelOperation)) {
@@ -135,25 +149,17 @@ public class HibernateClassGenerator extends ClassGenerator {
 	}
 	
 	private void addDomainAnnotations(UmlModel model, UmlClass modelClass, JavaClass clazz) {
-		if(isNotRootParent(model, modelClass)) {
+		if(GeneratorUtils.isNotRootParent(model, modelClass)) {
 			clazz.addAnnotation(PERSISTANCE_MAPPED_SUPERCLASS);
 			return;
 		}
 		
 		addDomainAnnotations(clazz);
 		
-		if(isParent(model, modelClass)) {
+		if(GeneratorUtils.isParent(model, modelClass)) {
 			clazz.addImport(PERSISTANCE_INHERITANCE_TYPE);
 			clazz.addAnnotation(PERSISTANCE_INHERITANCE, "strategy=InheritanceType.JOINED");
 		}
-	}
-	
-	private boolean isParent(UmlModel model, UmlClass modelClass) {
-		return ! model.findPerentGeneralizations(modelClass).isEmpty();
-	}
-
-	private boolean isNotRootParent(UmlModel model, UmlClass modelClass) {
-		return isParent(model, modelClass) && ! (CollectionUtils.isEmpty(modelClass.getGeneralizations())); //modelClass.getParent() != null
 	}
 	
 	private void addDomainAnnotations(JavaClass clazz) {
