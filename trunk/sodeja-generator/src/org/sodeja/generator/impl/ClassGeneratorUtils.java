@@ -103,7 +103,7 @@ public class ClassGeneratorUtils {
 		return new JavaEnum(pack, modelEnumeration.getName());
 	}
 	
-	protected static JavaPackage getJavaPackage(UmlNamespace namespace) {
+	public static JavaPackage getJavaPackage(UmlNamespace namespace) {
 		return JavaPackage.createFromDots(namespace.getFullName());
 	}
 }
