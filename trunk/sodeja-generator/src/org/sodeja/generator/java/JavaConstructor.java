@@ -23,6 +23,10 @@ public class JavaConstructor extends JavaMember implements JavaGenericDeclaratio
 		return typeParameters;
 	}
 
+	public void addTypeParameter(JavaTypeVariable parameter) {
+		typeParameters.add(parameter);
+	}
+	
 	public List<JavaMethodParameter> getParameters() {
 		return parameters;
 	}
