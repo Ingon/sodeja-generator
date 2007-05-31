@@ -89,40 +89,40 @@ public abstract class UmlNamespace extends UmlElement {
 	public abstract String getFullName();
 	
 	public List<UmlClass> findClassesByStereotype(String name) {
-		List<UmlClass> result = new ArrayList<UmlClass>();
-		
-		for(UmlClass clazz : this.classes) {
-			if(CollectionUtils.isEmpty(clazz.getStereotypes())) {
-				continue;
-			}
-			
-			if(clazz.hasStereotype(name)) {
-				result.add(clazz);
-			}
-		}
-		
+		List<UmlClass> result = findByStereotype(this.classes, name);
 		for(UmlNamespace child : children) {
 			result.addAll(child.findClassesByStereotype(name));
 		}
-		
+		return result;
+	}
+
+	public List<UmlInterface> findInterfacesByStereotype(String name) {
+		List<UmlInterface> result = findByStereotype(this.interfaces, name);
+		for(UmlNamespace child : children) {
+			result.addAll(child.findInterfacesByStereotype(name));
+		}
 		return result;
 	}
 	
 	public List<UmlEnumeration> findEnumerationsByStereotype(String name) {
-		List<UmlEnumeration> result = new ArrayList<UmlEnumeration>();
+		List<UmlEnumeration> result = findByStereotype(this.enumerations, name);
+		for(UmlNamespace child : children) {
+			result.addAll(child.findEnumerationsByStereotype(name));
+		}
+		return result;
+	}
+	
+	private <T extends UmlType> List<T> findByStereotype(List<T> elements, String name) {
+		List<T> result = new ArrayList<T>();
 		
-		for(UmlEnumeration clazz : this.enumerations) {
-			if(CollectionUtils.isEmpty(clazz.getStereotypes())) {
+		for(T type : elements) {
+			if(CollectionUtils.isEmpty(type.getStereotypes())) {
 				continue;
 			}
 			
-			if(clazz.hasStereotype(name)) {
-				result.add(clazz);
+			if(type.hasStereotype(name)) {
+				result.add(type);
 			}
-		}
-		
-		for(UmlNamespace child : children) {
-			result.addAll(child.findEnumerationsByStereotype(name));
 		}
 		
 		return result;
