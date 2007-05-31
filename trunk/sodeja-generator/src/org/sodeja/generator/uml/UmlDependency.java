@@ -7,8 +7,8 @@ public class UmlDependency extends UmlElement {
 	private UmlDependencyType type;
 	
 	private List<UmlReference<UmlStereotype>> stereotypes;
-	private UmlReference<? extends UmlClass> client;
-	private UmlReference<? extends UmlClass> supplier;
+	private UmlReference<? extends UmlType> client;
+	private UmlReference<? extends UmlType> supplier;
 	
 	public UmlDependency() {
 		stereotypes = new ArrayList<UmlReference<UmlStereotype>>();
@@ -25,17 +25,17 @@ public class UmlDependency extends UmlElement {
 		return stereotypes;
 	}
 
-	public UmlReference<? extends UmlClass> getClient() {
+	public UmlReference<? extends UmlType> getClient() {
 		return client;
 	}
-	public void setClient(UmlReference<? extends UmlClass> client) {
+	public void setClient(UmlReference<? extends UmlType> client) {
 		this.client = client;
 	}
 	
-	public UmlReference<? extends UmlClass> getSupplier() {
+	public UmlReference<? extends UmlType> getSupplier() {
 		return supplier;
 	}
-	public void setSupplier(UmlReference<? extends UmlClass> supplier) {
+	public void setSupplier(UmlReference<? extends UmlType> supplier) {
 		this.supplier = supplier;
 	}
 }

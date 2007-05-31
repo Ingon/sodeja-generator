@@ -2,6 +2,7 @@ package org.sodeja.generator.uml.argouml;
 
 import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
+import org.sodeja.generator.uml.UmlDependency;
 import org.sodeja.generator.uml.UmlElement;
 import org.sodeja.generator.uml.UmlGeneralization;
 import org.sodeja.generator.uml.UmlInterface;
@@ -37,6 +38,14 @@ public class UmlInterfaceParserStrategy extends XmiParserStrategy {
 		} else if(parent instanceof UmlParameter) {
 			UmlReference<UmlInterface> reference = createReference(context, UmlInterface.class, attributes);
 			((UmlParameter) parent).setType(reference);
+		} else if(parent instanceof UmlDependency) {
+			UmlReference<UmlInterface> reference = createReference(context, UmlInterface.class, attributes);
+			String xmlParent = context.getParentTagName();
+			if(xmlParent.equals("UML:Dependency.client")) {
+				((UmlDependency) parent).setClient(reference);
+			} else {
+				((UmlDependency) parent).setSupplier(reference);
+			}
 		} else {
 			throw new RuntimeException();
 		}

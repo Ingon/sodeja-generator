@@ -3,6 +3,7 @@ package org.sodeja.generator;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -85,9 +86,28 @@ public class GeneratorMain {
 			}
 			
 			String property = generatorProperty.substring(generatorProperty.lastIndexOf(".") + 1);
-			ReflectUtils.setFieldValue(generator, property, generatorProperties.getProperty(generatorProperty));
+			String propertyValue = generatorProperties.getProperty(generatorProperty);
+			
+			Object convertedValue = getConvertedValue(generator, property, propertyValue);
+			ReflectUtils.setFieldValue(generator, property, convertedValue);
+			
+//			Field field = ReflectUtils.findFieldInHierarchy(generator, property);
+//			if(field.getType() == Boolean.TYPE) {
+//				ReflectUtils.setFieldValue(generator, property, Boolean.parseBoolean(propertyValue));
+//			} else {
+//				ReflectUtils.setFieldValue(generator, property, propertyValue);
+//			}
 		}
 		
 		return generator;
+	}
+	
+	private static Object getConvertedValue(Generator generator, String property, String propertyValue) {
+		Field field = ReflectUtils.findFieldInHierarchy(generator, property);
+		if(field.getType() == Boolean.TYPE) {
+			return Boolean.parseBoolean(propertyValue);
+		} else {
+			return propertyValue;
+		}
 	}
 }

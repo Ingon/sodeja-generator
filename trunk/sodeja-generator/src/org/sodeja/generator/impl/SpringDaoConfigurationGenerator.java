@@ -18,6 +18,8 @@ public class SpringDaoConfigurationGenerator extends AbstractConfigurationGenera
 	private static final SpringBean HIBERNATE_SESSION_FACTORY = new SpringBean("hibernateSessionFactory", null);
 	
 	private static final String BASE_DAO_NAME = "baseDao";
+	
+	private boolean daoOnly = false;
 
 	@Override
 	public void generate(GeneratorContext ctx, UmlModel model) {
@@ -75,6 +77,10 @@ public class SpringDaoConfigurationGenerator extends AbstractConfigurationGenera
 	}
 
 	private boolean isCustomDao(UmlClass modelClass) {
+		if(! daoOnly) {
+			return true;
+		}
+		
 		for(UmlOperation modelOperation : modelClass.getOperations()) {
 			if(GeneratorUtils.isDao(modelOperation)) {
 				return true;

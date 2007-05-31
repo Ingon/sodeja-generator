@@ -25,6 +25,8 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 	protected static final JavaInterface PARENT_DAO = new JavaInterface(PARENT_DAO_PACKAGE, "GenericDao");
 	protected static final JavaClass PARENT_DAO_IMPL = new JavaClass(PARENT_DAO_PACKAGE, "GenericDaoImpl");
 	
+	private boolean daoOnly = false;
+	
 	@Override
 	public void generate(GeneratorContext ctx, UmlModel model) {
 		super.generate(ctx, model);
@@ -41,7 +43,7 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 		}
 		
 		List<UmlOperation> modelDaoOperations = getDaoOperations(modelClass);
-		if(CollectionUtils.isEmpty(modelDaoOperations)) {
+		if(daoOnly && CollectionUtils.isEmpty(modelDaoOperations)) {
 			return;
 		}
 		
