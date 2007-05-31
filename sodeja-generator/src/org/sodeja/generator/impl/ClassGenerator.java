@@ -5,6 +5,7 @@ import java.util.List;
 import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
 import org.sodeja.generator.GeneratorContext;
+import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
@@ -13,10 +14,16 @@ import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameterizedType;
 import org.sodeja.generator.java.JavaType;
+import org.sodeja.generator.java.JavaTypeVariable;
+import org.sodeja.generator.java.JavaTypeVariableReference;
 import org.sodeja.generator.uml.UmlAssociation;
 import org.sodeja.generator.uml.UmlAssociationEnd;
 import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlClass;
+import org.sodeja.generator.uml.UmlDependency;
+import org.sodeja.generator.uml.UmlDependencyType;
+import org.sodeja.generator.uml.UmlEnumeration;
+import org.sodeja.generator.uml.UmlEnumerationLiteral;
 import org.sodeja.generator.uml.UmlGeneralization;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlMultiplicityRange;
@@ -38,12 +45,31 @@ public class ClassGenerator extends AbstractClassGenerator {
 	public void generate(GeneratorContext ctx, UmlModel model) {
 		super.generate(ctx, model);
 		
+		List<UmlEnumeration> modelEnumerations = model.findEnumerationsByStereotype(getStereotype());
+		for(UmlEnumeration modelEnumeration : modelEnumerations) {
+			generate(ctx, model, modelEnumeration);
+		}
+		
 		List<UmlClass> modelClasses = model.findClassesByStereotype(getStereotype());
 		for(UmlClass modelClass : modelClasses) {
 			generate(ctx, model, modelClass);
 		}
 	}
 
+	protected void generate(GeneratorContext ctx, UmlModel model, UmlEnumeration modelEnumeration) {
+		JavaPackage domainPackage = JavaPackage.createFromDots(modelEnumeration.getParentNamespace().getFullName());
+		JavaEnum domainClass = createJavaEnum(domainPackage, model, modelEnumeration);
+		writeClass(domainClass);
+	}
+	
+	protected JavaEnum createJavaEnum(JavaPackage domainPackage, UmlModel model, UmlEnumeration modelEnumeration) {
+		JavaEnum javaEnum = new JavaEnum(domainPackage, modelEnumeration.getName());
+		for(UmlEnumerationLiteral attribute : modelEnumeration.getLiterals()) {
+			javaEnum.addValue(attribute.getName());
+		}
+		return javaEnum;
+	}
+	
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlClass modelClass) {
 		JavaPackage domainPackage = JavaPackage.createFromDots(modelClass.getParentNamespace().getFullName());
 		JavaClass domainClass = createClass(domainPackage, model, modelClass);
@@ -52,7 +78,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	
 	protected JavaClass createClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
 		if(GeneratorUtils.isEnum(modelClass)) {
-			return createJavaEnum(domainPackage, model, modelClass);
+			throw new IllegalArgumentException("Implementation changed to use a UmlEnumeration type");
 		}
 		
 		JavaClass domainClass = createJavaClass(domainPackage, model, modelClass);
@@ -62,28 +88,56 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return domainClass;
 	}
 	
-	protected JavaClass createJavaEnum(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
-		JavaEnum javaEnum = new JavaEnum(domainPackage, modelClass.getName());
-		for(UmlAttribute attribute : modelClass.getAttributes()) {
-			javaEnum.addValue(attribute.getName());
-		}
-		return javaEnum;
-	}
-	
 	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
 		JavaClass domainClass = new JavaClass(domainPackage, modelClass.getName());
-		if(! CollectionUtils.isEmpty(modelClass.getGeneralizations())) {
-			if(modelClass.getGeneralizations().size() > 1) {
-				throw new IllegalArgumentException("It is not possible to implement more than one class");
-			}
-			
-			UmlReference<UmlGeneralization> generalizationRef = ListUtils.first(modelClass.getGeneralizations());
-			UmlGeneralization generalization = generalizationRef.getReferent();
-			UmlClass modelParentClass = (UmlClass) generalization.getParent().getReferent();
-			domainClass.setParent(ClassGeneratorUtils.getJavaClass(modelParentClass));
+		if(CollectionUtils.isEmpty(modelClass.getGeneralizations())) {
+			return domainClass;
+		}
+
+		if(modelClass.getGeneralizations().size() > 1) {
+			throw new IllegalArgumentException("It is not possible to implement more than one class");
 		}
 		
+		createParent(model, modelClass, domainClass);
+		
 		return domainClass;
+	}
+
+	protected void createParent(UmlModel model, UmlClass modelClass, JavaClass domainClass) {
+		UmlReference<UmlGeneralization> generalizationRef = ListUtils.first(modelClass.getGeneralizations());
+		UmlGeneralization generalization = generalizationRef.getReferent();
+		UmlClass modelParentClass = (UmlClass) generalization.getParent().getReferent();
+		domainClass.setParent(ClassGeneratorUtils.getJavaClass(modelParentClass));
+		
+		createGenerics(model, modelClass, domainClass, modelParentClass);
+	}
+
+	protected void createGenerics(UmlModel model, UmlClass modelClass, JavaClass domainClass, UmlClass modelParentClass) {
+		for(UmlReference<UmlDependency> dependencyRef : modelClass.getDependencies()) {
+			UmlDependency dependency = dependencyRef.getReferent();
+			UmlDependency parentDependency = findNamedDependency(modelParentClass, dependency);
+			if(parentDependency == null) {
+				continue;
+			}
+			
+			JavaClass parentClass = (JavaClass) domainClass.getParent();
+			
+			// TODO Check if it is not a leaf and add generic declaration!!!
+			JavaParameterizedType realType = new JavaParameterizedType(parentClass);
+			realType.getTypeArguments().add(createJavaClass(domainClass.getPackage(), model, dependency.getSupplier().getReferent()));
+			domainClass.setParent(realType);
+		}
+	}
+	
+	protected UmlDependency findNamedDependency(UmlClass modelParentClass, UmlDependency childDependency) {
+		for(UmlReference<UmlDependency> dependencyRef : modelParentClass.getDependencies()) {
+			UmlDependency dependency = dependencyRef.getReferent();
+			if(dependency.getName().equals(childDependency.getName())) {
+				return dependency;
+			}
+		}
+		
+		return null;
 	}
 
 	protected void createAttributes(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
@@ -110,12 +164,14 @@ public class ClassGenerator extends AbstractClassGenerator {
 
 	protected JavaMethod createGetter(String name, JavaType type) {
 		JavaMethod getter = new JavaMethod(type, "get" + NamingUtils.firstUpper(name));
+		getter.setAccessModifier(JavaAccessModifier.PUBLIC);
 		getter.setContent(String.format("return this.%s;", name));
 		return getter;
 	}
 
 	protected JavaMethod createSetter(JavaField field) {
 		JavaMethod setter = new JavaMethod(VOID_CLASS, "set" + NamingUtils.firstUpper(field.getName()));
+		setter.setAccessModifier(JavaAccessModifier.PUBLIC);
 		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
 		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
 		return setter;
@@ -142,8 +198,18 @@ public class ClassGenerator extends AbstractClassGenerator {
 		}
 		
 		UmlType otherModelType = otherEnd.getReferent().getReferent();
-		JavaType type = createType(otherEnd, otherModelType);
+		JavaType type = createType(domainClass, otherEnd, otherModelType, getDependency(modelClass, otherModelType));
 		return new JavaField(type, otherEnd.getName());
+	}
+
+	protected UmlDependency getDependency(UmlClass modelClass, UmlType otherModelType) {
+		for(UmlReference<UmlDependency> dependencyRef : modelClass.getDependencies()) {
+			UmlDependency dependency = dependencyRef.getReferent();
+			if(otherModelType.isReferent(dependency.getSupplier()) && dependency.getType() == UmlDependencyType.USAGE) {
+				return dependency;
+			}
+		}
+		return null;
 	}
 	
 	protected void createOperations(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
@@ -159,15 +225,38 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return ClassGeneratorUtils.createMethod(domainClass, modelOperation);
 	}
 
-	protected JavaType createType(UmlAssociationEnd otherEnd, UmlType otherModelType) {
-		if(otherEnd.getRange().isMulty()) {
-			JavaClass baseClass = getJavaClass(otherEnd.getOrdering());
-			JavaParameterizedType type = new JavaParameterizedType(baseClass);
-			type.getTypeArguments().add(ClassGeneratorUtils.getJavaClass(otherModelType));
-			return type;
-		} else {
-			return ClassGeneratorUtils.getJavaClass(otherModelType);
+	protected JavaType createType(JavaClass domainClass, UmlAssociationEnd otherEnd, UmlType otherModelType, UmlDependency dependency) {
+		if(! otherEnd.getRange().isMulty()) {
+			return createSingleType(domainClass, otherEnd, otherModelType, dependency);
 		}
+		
+		return createMultyType(domainClass, otherEnd, otherModelType, dependency);
+	}
+
+	protected JavaType createSingleType(JavaClass domainClass, UmlAssociationEnd otherEnd, UmlType otherModelType, UmlDependency dependency) {
+		JavaClass javaClass = ClassGeneratorUtils.getJavaClass(otherModelType);
+		return createReferenceType(domainClass, otherEnd, dependency, javaClass);
+	}
+
+	protected JavaType createMultyType(JavaClass domainClass, UmlAssociationEnd otherEnd, UmlType otherModelType, UmlDependency dependency) {
+		JavaClass baseClass = getJavaClass(otherEnd.getOrdering());
+		JavaParameterizedType type = new JavaParameterizedType(baseClass);
+
+		JavaClass javaClass = ClassGeneratorUtils.getJavaClass(otherModelType);
+		JavaType refType = createReferenceType(domainClass, otherEnd, dependency, javaClass);
+		type.getTypeArguments().add(refType);
+
+		return type;
+	}
+
+	protected JavaType createReferenceType(JavaClass domainClass, UmlAssociationEnd otherEnd, UmlDependency dependency, JavaClass javaClass) {
+		if(dependency == null) {
+			return javaClass;
+		}
+		
+		String typeVariableName = dependency.getName();
+		domainClass.addTypeParameter(new JavaTypeVariable(typeVariableName, javaClass));
+		return new JavaTypeVariableReference(typeVariableName);
 	}
 	
 	protected JavaClass getJavaClass(UmlOrdering ordering) {

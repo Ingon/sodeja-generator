@@ -1,6 +1,8 @@
 package org.sodeja.generator.impl;
 
+import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaClass;
+import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
@@ -9,6 +11,7 @@ import org.sodeja.generator.java.JavaParameterizedType;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
+import org.sodeja.generator.uml.UmlEnumeration;
 import org.sodeja.generator.uml.UmlInterface;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlOwnerScope;
@@ -20,6 +23,7 @@ public class ClassGeneratorUtils {
 	protected static JavaMethod createMethod(JavaClass domainClass, UmlOperation modelOperation) {
 		JavaType resultType = getParameterType(modelOperation.getResult());
 		JavaMethod method = new JavaMethod(resultType, modelOperation.getName());
+		method.setAccessModifier(JavaAccessModifier.PUBLIC);
 		method.setCustom(modelOperation.getId());
 		method.setStatic(modelOperation.getScope() == UmlOwnerScope.CLASSIFIER);
 		
@@ -67,6 +71,8 @@ public class ClassGeneratorUtils {
 			return getJavaClass((UmlInterface) modelType);
 		} else if(modelType instanceof UmlClass) {
 			return getJavaClass((UmlClass) modelType);
+		} else if(modelType instanceof UmlEnumeration) {
+			return getJavaClass((UmlEnumeration) modelType);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -80,5 +86,10 @@ public class ClassGeneratorUtils {
 	protected static JavaClass getJavaClass(UmlInterface modelInterface) {
 		JavaPackage pack = JavaPackage.createFromDots(modelInterface.getParentNamespace().getFullName());
 		return new JavaInterface(pack, modelInterface.getName());
+	}
+	
+	protected static JavaClass getJavaClass(UmlEnumeration modelEnumeration) {
+		JavaPackage pack = JavaPackage.createFromDots(modelEnumeration.getParentNamespace().getFullName());
+		return new JavaEnum(pack, modelEnumeration.getName());
 	}
 }
