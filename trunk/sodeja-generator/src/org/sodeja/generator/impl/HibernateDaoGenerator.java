@@ -51,7 +51,7 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 		UmlPackage modelDaoPackage = new UmlPackage(modelRootPackage);
 		modelDaoPackage.setName("dao");
 		
-		JavaPackage daoPackage = JavaPackage.createFromDots(modelDaoPackage.getFullName());
+		JavaPackage daoPackage = ClassGeneratorUtils.getJavaPackage(modelDaoPackage);
 		
 		JavaInterface parentInterface = createInterface(ctx, modelClass, modelDaoOperations, daoPackage);
 		createImpl(ctx, modelClass, modelDaoOperations, parentInterface);
