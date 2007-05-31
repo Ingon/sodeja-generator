@@ -181,7 +181,6 @@ public class DefaultJavaClassWriter {
 	private void writeConstructor(JavaConstructor constructor, MergingJavaFile mergedContents, PrintWriter out) {
 		writeAnnotations(constructor, out);
 		
-		// TODO there is still logic to be added.
 		out.format("%s%s%s %s(%s)%s {", getLevelPrefix(), getAccess(constructor), 
 				getConstrcutorGenericDeclaration(constructor), clazz.getName(), 
 				getParameters(constructor), getThrows(constructor));
@@ -442,6 +441,8 @@ public class DefaultJavaClassWriter {
 			return getTypeText((JavaClass) type);
 		} else if(type instanceof JavaPrimitiveType) {
 			return ((JavaPrimitiveType) type).name().toLowerCase();
+		} else if(type instanceof JavaTypeVariableReference) {
+			return ((JavaTypeVariableReference) type).getName();
 		} else {
 			throw new IllegalArgumentException();
 		}
