@@ -88,7 +88,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return domainClass;
 	}
 	
-	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
+	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlType modelClass) {
 		JavaClass domainClass = new JavaClass(domainPackage, modelClass.getName());
 		if(CollectionUtils.isEmpty(modelClass.getGeneralizations())) {
 			return domainClass;
@@ -103,7 +103,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return domainClass;
 	}
 
-	protected void createParent(UmlModel model, UmlClass modelClass, JavaClass domainClass) {
+	protected void createParent(UmlModel model, UmlType modelClass, JavaClass domainClass) {
 		UmlReference<UmlGeneralization> generalizationRef = ListUtils.first(modelClass.getGeneralizations());
 		UmlGeneralization generalization = generalizationRef.getReferent();
 		UmlClass modelParentClass = (UmlClass) generalization.getParent().getReferent();
@@ -112,7 +112,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		createGenerics(model, modelClass, domainClass, modelParentClass);
 	}
 
-	protected void createGenerics(UmlModel model, UmlClass modelClass, JavaClass domainClass, UmlClass modelParentClass) {
+	protected void createGenerics(UmlModel model, UmlType modelClass, JavaClass domainClass, UmlClass modelParentClass) {
 		for(UmlReference<UmlDependency> dependencyRef : modelClass.getDependencies()) {
 			UmlDependency dependency = dependencyRef.getReferent();
 			UmlDependency parentDependency = findNamedDependency(modelParentClass, dependency);
