@@ -5,6 +5,7 @@ import java.util.List;
 import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
+import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
@@ -105,5 +106,24 @@ public class ClassGeneratorUtils {
 	
 	public static JavaPackage getJavaPackage(UmlNamespace namespace) {
 		return JavaPackage.createFromDots(namespace.getFullName());
+	}
+
+	public static JavaMethod createGetter(JavaField field) {
+		return createGetter(field.getName(), field.getType());
+	}
+	
+	public static JavaMethod createGetter(String name, JavaType type) {
+		JavaMethod getter = new JavaMethod(type, "get" + NamingUtils.firstUpper(name));
+		getter.setAccessModifier(JavaAccessModifier.PUBLIC);
+		getter.setContent(String.format("return this.%s;", name));
+		return getter;
+	}
+	
+	public static JavaMethod createSetter(JavaField field) {
+		JavaMethod setter = new JavaMethod(ClassGenerator.VOID_CLASS, "set" + NamingUtils.firstUpper(field.getName()));
+		setter.setAccessModifier(JavaAccessModifier.PUBLIC);
+		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
+		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
+		return setter;
 	}
 }
