@@ -11,6 +11,7 @@ import java.util.List;
 import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
 import org.sodeja.functional.Predicate1;
+import org.sodeja.lang.StringUtils;
 
 public class DefaultJavaClassWriter {
 	
@@ -53,9 +54,11 @@ public class DefaultJavaClassWriter {
 		if(clazz instanceof JavaEnum) {
 			out.format("%s enum %s {", getAccess(clazz), clazz.getName());
 		} else if(clazz instanceof JavaInterface) {
-			out.format("%s interface%s %s%s {", getAccess(clazz), getGenericDeclaration(clazz), clazz.getName(), getInterfaceExtends());
+			out.format("%s interface %s%s%s {", getAccess(clazz), clazz.getName(), 
+					getGenericDeclaration(clazz), getInterfaceExtends());
 		} else if(clazz instanceof JavaClass) {
-			out.format("%s class%s %s%s%s {", getAccess(clazz), getGenericDeclaration(clazz), clazz.getName(), getExtends(), getImplements());
+			out.format("%s class %s%s%s%s {", getAccess(clazz), clazz.getName(), 
+					getGenericDeclaration(clazz), getExtends(), getImplements());
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -179,8 +182,9 @@ public class DefaultJavaClassWriter {
 		writeAnnotations(constructor, out);
 		
 		// TODO there is still logic to be added.
-		out.format("%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(constructor), getGenericDeclaration(constructor),
-				clazz.getName(), getParameters(constructor), getThrows(constructor));
+		out.format("%s%s%s %s(%s)%s {", getLevelPrefix(), getAccess(constructor), 
+				getConstrcutorGenericDeclaration(constructor), clazz.getName(), 
+				getParameters(constructor), getThrows(constructor));
 		
 		out.println();
 		
@@ -205,15 +209,15 @@ public class DefaultJavaClassWriter {
 	private void writeMethod(JavaMethod method, MergingJavaFile mergedContents, PrintWriter out) {
 		writeAnnotations(method, out);
 		if(method.isAbstract()) {
-			out.format("%s%s abstract %s %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
-					getGenericDeclaration(method), getTypeText(method.getReturnType()), 
+			out.format("%s%s abstract%s %s %s(%s)%s;", getLevelPrefix(), getAccess(method), 
+					getMethodGenericDeclaration(method), getTypeText(method.getReturnType()), 
 					method.getName(), getParameters(method), getThrows(method));
 			out.println();
 			return;
 		}
 		
-		out.format("%s%s%s %s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), 
-				getGenericDeclaration(method), getTypeText(method.getReturnType()), 
+		out.format("%s%s%s%s %s %s(%s)%s {", getLevelPrefix(), getAccess(method), getStatic(method), 
+				getMethodGenericDeclaration(method), getTypeText(method.getReturnType()), 
 				method.getName(), getParameters(method), getThrows(method));
 		out.println();
 		
@@ -255,6 +259,24 @@ public class DefaultJavaClassWriter {
 		}
 	}
 
+	private String getConstrcutorGenericDeclaration(JavaConstructor constructor) {
+		String result = getGenericDeclaration(constructor);
+		if(StringUtils.isTrimmedEmpty(result)) {
+			return result;
+		}
+		
+		return " " + result;
+	}
+	
+	private String getMethodGenericDeclaration(JavaMethod method) {
+		String result = getGenericDeclaration(method);
+		if(StringUtils.isTrimmedEmpty(result)) {
+			return result;
+		}
+		
+		return " " + result;
+	}
+	
 	private String getGenericDeclaration(JavaGenericDeclaration declaration) {
 		if(CollectionUtils.isEmpty(declaration.getTypeParameters())) {
 			return "";

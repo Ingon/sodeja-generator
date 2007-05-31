@@ -74,6 +74,10 @@ public class JavaMethod extends JavaMember implements JavaGenericDeclaration, Ja
 		return typeParameters;
 	}
 
+	public void addTypeParameter(JavaTypeVariable parameter) {
+		typeParameters.add(parameter);
+	}
+	
 	@Override
 	public String getContent() {
 		return content;

@@ -1,7 +1,10 @@
 package org.sodeja.generator.java;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.sodeja.collections.CollectionUtils;
 
 public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable, JavaGenericDeclaration {
 	private JavaPackage _package;
@@ -51,7 +54,18 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	}
 
 	public List<JavaTypeVariable> getTypeParameters() {
-		return typeParameters;
+		return Collections.unmodifiableList(typeParameters);
+	}
+	
+	public void addTypeParameter(JavaTypeVariable param) {
+		if(param.getBound() == null) {
+			if(CollectionUtils.isEmpty(param.getAdditionalBounds())) {
+				throw new IllegalArgumentException();
+			}
+		}
+		
+		autoImport(param);
+		typeParameters.add(param);
 	}
 
 	public JavaClass getParent() {
@@ -159,15 +173,12 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	}
 
 	private void autoImport(JavaMethod method) {
+		autoImportTypeParameters(method);
 		autoImportMember(method);
 		if(method.getReturnType() instanceof JavaClass) {
 			autoImport((JavaClass) method.getReturnType());
 		}
-		for(JavaMethodParameter param : method.getParameters()) {
-			if(param.getType() instanceof JavaClass) {
-				autoImport((JavaClass) param.getType());
-			}
-		}
+		autoImportParameters(method.getParameters());
 	}
 
 	private void autoImport(JavaField field) {
@@ -178,8 +189,28 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	}
 	
 	private void autoImport(JavaConstructor constructor) {
+		autoImportTypeParameters(constructor);
 		autoImportMember(constructor);
-		for(JavaMethodParameter param : constructor.getParameters()) {
+		autoImportParameters(constructor.getParameters());
+	}
+	
+	private void autoImportTypeParameters(JavaGenericDeclaration declaration) {
+		for(JavaTypeVariable param : declaration.getTypeParameters()) {
+			autoImport(param);
+		}
+	}
+	
+	private void autoImport(JavaTypeVariable param) {
+		if(param.getBound() != null) {
+			autoImport(param.getBound());
+		}
+		if(! CollectionUtils.isEmpty(param.getAdditionalBounds())) {
+			autoImport(param.getAdditionalBounds());
+		}
+	}
+	
+	private void autoImportParameters(List<JavaMethodParameter> params) {
+		for(JavaMethodParameter param : params) {
 			if(param.getType() instanceof JavaClass) {
 				autoImport((JavaClass) param.getType());
 			}
@@ -189,6 +220,12 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	private void autoImportMember(JavaMember member) {
 		for(JavaAnnotation annotation : member.getAnnotations()) {
 			autoImport(annotation.getType());
+		}
+	}
+	
+	private void autoImport(List<? extends JavaClass> clazzes) {
+		for(JavaClass clazz : clazzes) {
+			autoImport(clazz);
 		}
 	}
 	
