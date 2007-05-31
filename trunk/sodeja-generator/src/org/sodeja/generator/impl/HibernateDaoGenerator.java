@@ -61,10 +61,7 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 		JavaInterface daoInterface = new JavaInterface(daoPackage, modelClass.getName() + "Dao");
 		daoInterface.addInterface(createParentType(modelClass));
 
-		for(UmlOperation modelOperation : modelDaoOperations) {
-			JavaMethod method = ClassGeneratorUtils.createMethod(daoInterface, modelOperation);
-			daoInterface.addMethod(method);
-		}
+		addOperations(modelDaoOperations, daoInterface);
 		
 		writeClass(daoInterface);
 		return daoInterface;
@@ -75,12 +72,15 @@ public class HibernateDaoGenerator extends AbstractClassGenerator {
 		daoClass.setParent(createParentTypeImpl(modelClass));
 		daoClass.addInterface(parentInterface);
 
-		for(UmlOperation modelOperation : modelDaoOperations) {
-			JavaMethod method = ClassGeneratorUtils.createMethod(daoClass, modelOperation);
-			daoClass.addMethod(method);
-		}
-		
+		addOperations(modelDaoOperations, daoClass);
 		writeClass(daoClass);
+	}
+
+	private void addOperations(List<UmlOperation> modelDaoOperations, JavaClass type) {
+		for(UmlOperation modelOperation : modelDaoOperations) {
+			JavaMethod method = ClassGeneratorUtils.createMethod(type, modelOperation);
+			type.addMethod(method);
+		}
 	}
 
 	private List<UmlOperation> getDaoOperations(UmlClass modelClass) {
