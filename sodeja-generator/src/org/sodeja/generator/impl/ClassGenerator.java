@@ -9,6 +9,7 @@ import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
+import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
@@ -25,6 +26,7 @@ import org.sodeja.generator.uml.UmlDependencyType;
 import org.sodeja.generator.uml.UmlEnumeration;
 import org.sodeja.generator.uml.UmlEnumerationLiteral;
 import org.sodeja.generator.uml.UmlGeneralization;
+import org.sodeja.generator.uml.UmlInterface;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlMultiplicityRange;
 import org.sodeja.generator.uml.UmlOperation;
@@ -45,6 +47,11 @@ public class ClassGenerator extends AbstractClassGenerator {
 	public void generate(GeneratorContext ctx, UmlModel model) {
 		super.generate(ctx, model);
 		
+		List<UmlInterface> modelInterfaces = model.findInterfacesByStereotype(getStereotype());
+		for(UmlInterface modelInterface : modelInterfaces) {
+			generate(ctx, model, modelInterface);
+		}
+		
 		List<UmlEnumeration> modelEnumerations = model.findEnumerationsByStereotype(getStereotype());
 		for(UmlEnumeration modelEnumeration : modelEnumerations) {
 			generate(ctx, model, modelEnumeration);
@@ -54,6 +61,31 @@ public class ClassGenerator extends AbstractClassGenerator {
 		for(UmlClass modelClass : modelClasses) {
 			generate(ctx, model, modelClass);
 		}
+	}
+
+	protected void generate(GeneratorContext ctx, UmlModel model, UmlInterface modelInterface) {
+		JavaPackage domainPackage = JavaPackage.createFromDots(modelInterface.getParentNamespace().getFullName());
+		JavaInterface domainClass = createJavaInterface(domainPackage, model, modelInterface);
+		
+		createOperations(domainClass, model, modelInterface);
+		
+		writeClass(domainClass);
+	}
+
+
+	private JavaInterface createJavaInterface(JavaPackage domainPackage, UmlModel model, UmlInterface modelInterface) {
+		JavaInterface domainClass = new JavaInterface(domainPackage, modelInterface.getName());
+		if(CollectionUtils.isEmpty(modelInterface.getGeneralizations())) {
+			return domainClass;
+		}
+
+		for(UmlReference<UmlGeneralization> generalizationRef : modelInterface.getGeneralizations()) {
+			UmlGeneralization generalization = generalizationRef.getReferent();
+			UmlInterface parentInterface = (UmlInterface) generalization.getParent().getReferent();
+			domainClass.addInterface(ClassGeneratorUtils.getJavaClass(parentInterface));
+		}
+		
+		return domainClass;
 	}
 
 	protected void generate(GeneratorContext ctx, UmlModel model, UmlEnumeration modelEnumeration) {
@@ -75,7 +107,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		JavaClass domainClass = createClass(domainPackage, model, modelClass);
 		writeClass(domainClass);
 	}
-	
+
 	protected JavaClass createClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
 		if(GeneratorUtils.isEnum(modelClass)) {
 			throw new IllegalArgumentException("Implementation changed to use a UmlEnumeration type");
@@ -212,8 +244,8 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return null;
 	}
 	
-	protected void createOperations(JavaClass domainClass, UmlModel model, UmlClass modelClass) {
-		for(UmlOperation modelOperation : modelClass.getOperations()) {
+	protected void createOperations(JavaClass domainClass, UmlModel model, UmlType modelType) {
+		for(UmlOperation modelOperation : modelType.getOperations()) {
 			JavaMethod method = createMethod(domainClass, model, modelOperation);
 			if(method != null) {
 				domainClass.addMethod(method);
