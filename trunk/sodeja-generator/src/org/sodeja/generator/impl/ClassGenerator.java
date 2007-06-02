@@ -258,7 +258,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaType createSingleType(JavaClass domainClass, UmlAssociationEnd otherEnd, UmlType otherModelType, UmlDependency dependency) {
-		JavaClass javaClass = ClassGeneratorUtils.getJavaClass(otherModelType);
+		JavaClass javaClass = (JavaClass) ClassGeneratorUtils.getJavaClass(otherModelType);
 		return createReferenceType(domainClass, otherEnd, dependency, javaClass);
 	}
 
@@ -266,7 +266,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		JavaClass baseClass = getJavaClass(otherEnd.getOrdering());
 		JavaParameterizedType type = new JavaParameterizedType(baseClass);
 
-		JavaClass javaClass = ClassGeneratorUtils.getJavaClass(otherModelType);
+		JavaClass javaClass = (JavaClass) ClassGeneratorUtils.getJavaClass(otherModelType);
 		JavaType refType = createReferenceType(domainClass, otherEnd, dependency, javaClass);
 		type.getTypeArguments().add(refType);
 

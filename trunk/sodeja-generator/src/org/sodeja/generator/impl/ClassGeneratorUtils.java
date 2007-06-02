@@ -11,6 +11,7 @@ import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameterizedType;
+import org.sodeja.generator.java.JavaPrimitiveType;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
@@ -47,7 +48,7 @@ public class ClassGeneratorUtils {
 	}
 
 	protected static JavaType getParameterType(UmlParameter parameter) {
-		JavaClass baseClass = getJavaClass(parameter.getType());
+		JavaType baseClass = getJavaClass(parameter.getType());
 		
 		String value = GeneratorUtils.getMulty(parameter);
 		if(value == null) {
@@ -71,13 +72,17 @@ public class ClassGeneratorUtils {
 		}
 	}
 	
-	protected static JavaClass getJavaClass(UmlReference<? extends UmlType> modelReference) {
+	protected static JavaType getJavaClass(UmlReference<? extends UmlType> modelReference) {
 		return getJavaClass(modelReference.getReferent());
 	}
 	
-	protected static JavaClass getJavaClass(UmlType modelType) {
+	protected static JavaType getJavaClass(UmlType modelType) {
 		if(modelType instanceof UmlDataType) {
-			return new JavaClass(null, modelType.getName());
+			try {
+				return JavaPrimitiveType.valueOf(modelType.getName().toUpperCase());
+			} catch(Exception exc) {
+				return new JavaClass(null, modelType.getName());
+			}
 		} else if(modelType instanceof UmlInterface) {
 			return getJavaClass((UmlInterface) modelType);
 		} else if(modelType instanceof UmlClass) {
