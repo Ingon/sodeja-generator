@@ -9,6 +9,11 @@ import org.sodeja.collections.CollectionUtils;
 public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModifiable, 
 		JavaGenericDeclaration {
 	
+	public static JavaClass createFromClass(Class<?> clazz) {
+		JavaPackage javaPackage = JavaPackage.createFromDots(clazz.getPackage().getName());
+		return new JavaClass(javaPackage, clazz.getSimpleName());
+	}
+	
 	private JavaPackage _package;
 	
 	private List<JavaClass> imports;
@@ -19,8 +24,6 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	private String name;
 	private List<JavaTypeVariable> typeParameters;
 	
-//	private JavaClass parent;
-//	private List<JavaInterface> interfaces;
 	private JavaType parent;
 	private List<JavaType> interfaces;
 	
