@@ -51,7 +51,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	private static final JavaClass HIBERNATE_INDEX_COLUMN = new JavaClass(HIBERNATE_PACKAGE, "IndexColumn");
 
 	@Override
-	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlType modelType) {
+	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlClass modelType) {
 		JavaClass clazz = super.createJavaClass(domainPackage, model, modelType);
 		if(! (modelType instanceof UmlClass)) {
 			return clazz;
