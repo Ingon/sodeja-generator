@@ -1,6 +1,12 @@
 package org.sodeja.generator.java;
 
 public class JavaInterface extends JavaClass {
+	
+	public static JavaInterface createFromClass(Class<?> clazz) {
+		JavaPackage javaPackage = JavaPackage.createFromDots(clazz.getPackage().getName());
+		return new JavaInterface(javaPackage, clazz.getSimpleName());
+	}
+
 	public JavaInterface(JavaPackage _package, String name) {
 		super(_package, name);
 	}

@@ -17,8 +17,7 @@ import org.sodeja.generator.uml.UmlPackage;
 
 public class HibernateDaoGenerator extends AbstractClassGenerator {
 	
-	private static final JavaPackage JAVA_LANG_PACKAGE = new JavaPackage("java.lang");
-	private static final JavaClass LONG = new JavaClass(JAVA_LANG_PACKAGE, "Long");
+	private static final JavaClass LONG = JavaClass.createFromClass(Long.class);
 	
 	private static final JavaPackage PARENT_DAO_PACKAGE = JavaPackage.createFromDots("org.sodeja.hibernate");
 	protected static final JavaInterface PARENT_DAO = new JavaInterface(PARENT_DAO_PACKAGE, "GenericDao");

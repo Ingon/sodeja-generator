@@ -125,7 +125,7 @@ public class ClassGeneratorUtils {
 	}
 	
 	public static JavaMethod createSetter(JavaField field) {
-		JavaMethod setter = new JavaMethod(ClassGenerator.VOID_CLASS, "set" + NamingUtils.firstUpper(field.getName()));
+		JavaMethod setter = new JavaMethod(ClassGenerator.VOID_TYPE, "set" + NamingUtils.firstUpper(field.getName()));
 		setter.setAccessModifier(JavaAccessModifier.PUBLIC);
 		setter.addParameter(new JavaMethodParameter(field.getType(), field.getName()));
 		setter.setContent(String.format("this.%s = %s;", field.getName(), field.getName()));
