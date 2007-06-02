@@ -34,6 +34,8 @@ public class HibernateClassGenerator extends ClassGenerator {
 	private static final JavaClass PERSISTANCE_ID = new JavaClass(PERSISTANCE_PACKAGE, "Id");
 	private static final JavaClass PERSISTANCE_INHERITANCE = new JavaClass(PERSISTANCE_PACKAGE, "Inheritance");
 	private static final JavaClass PERSISTANCE_INHERITANCE_TYPE = new JavaClass(PERSISTANCE_PACKAGE, "InheritanceType");
+	private static final JavaClass PERSISTANCE_JOIN_COLUMN = new JavaClass(PERSISTANCE_PACKAGE, "JoinColumn");
+	private static final JavaClass PERSISTANCE_JOIN_TABLE = new JavaClass(PERSISTANCE_PACKAGE, "JoinTable");
 	private static final JavaClass PERSISTANCE_MAPPED_SUPERCLASS = new JavaClass(PERSISTANCE_PACKAGE, "MappedSuperclass");
 	private static final JavaClass PERSISTANCE_ONE_TO_MANY = new JavaClass(PERSISTANCE_PACKAGE, "OneToMany");
 	private static final JavaClass PERSISTANCE_ONE_TO_ONE = new JavaClass(PERSISTANCE_PACKAGE, "OneToOne");
@@ -126,12 +128,31 @@ public class HibernateClassGenerator extends ClassGenerator {
 			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, "cascade=CascadeType.ALL" + getTargetEntryStringC(modelClass, otherModelClass));
 		} else if(thisModelEnd.getRange().isMulty()) {
 			field.addAnnotation(PERSISTANCE_MANY_TO_ONE);
+			domainClass.addImport(PERSISTANCE_JOIN_COLUMN);
+			field.addAnnotation(PERSISTANCE_JOIN_TABLE, String.format("name=\"%s\", " +
+					"joinColumns = @JoinColumn(name = \"%s\"), " +
+					"inverseJoinColumns = @JoinColumn(name = \"%s\")", 
+					getJoinTableName(modelClass, otherModelClass), 
+					getJoinColumns(thisModelEnd),
+					getInverseJoinColumns(otherModelClass)));
 		} else {
 			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, getTargetEntryString(modelClass, otherModelClass));
 		}
 		return field;
 	}
 
+	private String getJoinTableName(UmlClass modelClass, UmlClass otherModelClass) {
+		return NamingUtils.getTableName(otherModelClass.getName()) + "_" + NamingUtils.getTableName(modelClass.getName());
+	}
+	
+	private String getJoinColumns(UmlAssociationEnd thisModelEnd) {
+		return thisModelEnd.getName() + "_id";
+	}
+	
+	private String getInverseJoinColumns(UmlClass otherModelClass) {
+		return NamingUtils.getTableName(otherModelClass.getName()) + "_id";
+	}
+	
 	private String getTargetEntryStringC(UmlClass modelClass, UmlClass otherModelClass) {
 		String value = getTargetEntryString(modelClass, otherModelClass);
 		if(StringUtils.isTrimmedEmpty(value)) {
@@ -177,12 +198,12 @@ public class HibernateClassGenerator extends ClassGenerator {
 	}
 	
 	private void addDomainAnnotations(JavaClass clazz) {
-		String mappingName = NamingUtils.toTableName(clazz.getName());
+		String mappingName = NamingUtils.getTableName(clazz.getName());
 		
 		clazz.addAnnotation(PERSISTANCE_ENTITY);
 		clazz.addAnnotation(HIBERNATE_ACCESS_TYPE, "\"field\"");
-		clazz.addAnnotation(PERSISTANCE_TABLE, "name=\"t_" + mappingName + "\"");
-		clazz.addAnnotation(PERSISTANCE_SEQUENCE_GENERATOR, "name=\"SEQ_GENERATOR\", sequenceName=\"t_" + mappingName + "_id_seq\"");
+		clazz.addAnnotation(PERSISTANCE_TABLE, "name=\"" + mappingName + "\"");
+		clazz.addAnnotation(PERSISTANCE_SEQUENCE_GENERATOR, "name=\"SEQ_GENERATOR\", sequenceName=\"" + mappingName + "_id_seq\"");
 	}
 
 	private void addDomainId(JavaClass clazz) {

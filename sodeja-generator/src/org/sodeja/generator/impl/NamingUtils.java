@@ -9,7 +9,7 @@ public class NamingUtils {
 		return name.substring(0, 1).toLowerCase() + name.substring(1);
 	}
 	
-	public static String toTableName(String name) {
+	public static String camelCaseToUnderscores(String name) {
 		StringBuilder builder = new StringBuilder(name);
 		builder.setCharAt(0, Character.toLowerCase(builder.charAt(0)));
 		
@@ -25,5 +25,9 @@ public class NamingUtils {
 		}
 		
 		return builder.toString();
+	}
+	
+	public static String getTableName(String clazzName) {
+		return String.format("t_%s", camelCaseToUnderscores(clazzName));
 	}
 }
