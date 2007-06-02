@@ -121,7 +121,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return domainClass;
 	}
 	
-	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlType modelClass) {
+	protected JavaClass createJavaClass(JavaPackage domainPackage, UmlModel model, UmlClass modelClass) {
 		JavaClass domainClass = new JavaClass(domainPackage, modelClass.getName());
 		if(CollectionUtils.isEmpty(modelClass.getGeneralizations())) {
 			return domainClass;
@@ -136,7 +136,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		return domainClass;
 	}
 
-	protected void createParent(UmlModel model, UmlType modelClass, JavaClass domainClass) {
+	protected void createParent(UmlModel model, UmlClass modelClass, JavaClass domainClass) {
 		UmlReference<UmlGeneralization> generalizationRef = ListUtils.first(modelClass.getGeneralizations());
 		UmlGeneralization generalization = generalizationRef.getReferent();
 		UmlClass modelParentClass = (UmlClass) generalization.getParent().getReferent();
@@ -145,7 +145,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 		createGenerics(model, modelClass, domainClass, modelParentClass);
 	}
 
-	protected void createGenerics(UmlModel model, UmlType modelClass, JavaClass domainClass, UmlClass modelParentClass) {
+	protected void createGenerics(UmlModel model, UmlClass modelClass, JavaClass domainClass, UmlClass modelParentClass) {
 		for(UmlReference<UmlDependency> dependencyRef : modelClass.getDependencies()) {
 			UmlDependency dependency = dependencyRef.getReferent();
 			UmlDependency parentDependency = findNamedDependency(modelParentClass, dependency);
@@ -156,9 +156,19 @@ public class ClassGenerator extends AbstractClassGenerator {
 			JavaClass parentClass = (JavaClass) domainClass.getParent();
 			
 			// TODO Check if it is not a leaf and add generic declaration!!!
-			JavaParameterizedType realType = new JavaParameterizedType(parentClass);
-			realType.getTypeArguments().add(createJavaClass(domainClass.getPackage(), model, dependency.getSupplier().getReferent()));
-			domainClass.setParent(realType);
+			UmlClass dependencyClass = (UmlClass) dependency.getSupplier().getReferent();
+			if(GeneratorUtils.isNotRootParent(model, modelClass)) {
+				JavaTypeVariable javaTypeVariable = new JavaTypeVariable("T", createJavaClass(domainClass.getPackage(), model, dependencyClass));
+				domainClass.addTypeParameter(javaTypeVariable);
+				
+				JavaParameterizedType realType = new JavaParameterizedType(parentClass);
+				realType.getTypeArguments().add(new JavaTypeVariableReference(javaTypeVariable.getName()));
+				domainClass.setParent(realType);
+			} else {
+				JavaParameterizedType realType = new JavaParameterizedType(parentClass);
+				realType.getTypeArguments().add(createJavaClass(domainClass.getPackage(), model, dependencyClass));
+				domainClass.setParent(realType);
+			}
 		}
 	}
 	
