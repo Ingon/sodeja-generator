@@ -1,6 +1,8 @@
 package org.sodeja.generator.impl;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
@@ -12,6 +14,7 @@ import org.sodeja.generator.java.JavaInterface;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameterizedType;
+import org.sodeja.generator.java.JavaPrimitiveType;
 import org.sodeja.generator.java.JavaType;
 import org.sodeja.generator.java.JavaTypeVariable;
 import org.sodeja.generator.java.JavaTypeVariableReference;
@@ -34,12 +37,11 @@ import org.sodeja.generator.uml.UmlType;
 
 public class ClassGenerator extends AbstractClassGenerator {
 	
-	protected static final JavaClass VOID_CLASS = new JavaClass(null, "void");
+	protected static final JavaType VOID_TYPE = JavaPrimitiveType.VOID;
 	
-	protected static final JavaPackage UTIL_PACKAGE = JavaPackage.createFromDots("java.util");
-	protected static final JavaClass COLLECTION_CLASS = new JavaClass(UTIL_PACKAGE, "Collection");
-	protected static final JavaClass LIST_CLASS = new JavaClass(UTIL_PACKAGE, "List");
-	protected static final JavaClass SET_CLASS = new JavaClass(UTIL_PACKAGE, "Set");
+	protected static final JavaInterface COLLECTION_CLASS = JavaInterface.createFromClass(Collection.class);
+	protected static final JavaInterface LIST_CLASS = JavaInterface.createFromClass(List.class);
+	protected static final JavaInterface SET_CLASS = JavaInterface.createFromClass(Set.class);
 	
 	@Override
 	public void generate(GeneratorContext ctx, UmlModel model) {

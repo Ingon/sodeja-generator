@@ -14,6 +14,7 @@ import org.sodeja.generator.uml.UmlEnumeration;
 import org.sodeja.generator.uml.UmlModel;
 import org.sodeja.generator.uml.UmlOperation;
 import org.sodeja.generator.uml.UmlType;
+import org.sodeja.lang.StringUtils;
 
 public class HibernateClassGenerator extends ClassGenerator {
 	
@@ -122,7 +123,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 			}
 		} else if(thisModelEnd.getType() == UmlAggregationType.COMPOSITE) {
 			domainClass.addImport(PERSISTANCE_CASCADE_TYPE);
-			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, "cascade=CascadeType.ALL, " + getTargetEntryString(modelClass, otherModelClass));
+			field.addAnnotation(PERSISTANCE_ONE_TO_ONE, "cascade=CascadeType.ALL" + getTargetEntryStringC(modelClass, otherModelClass));
 		} else if(thisModelEnd.getRange().isMulty()) {
 			field.addAnnotation(PERSISTANCE_MANY_TO_ONE);
 		} else {
@@ -131,6 +132,14 @@ public class HibernateClassGenerator extends ClassGenerator {
 		return field;
 	}
 
+	private String getTargetEntryStringC(UmlClass modelClass, UmlClass otherModelClass) {
+		String value = getTargetEntryString(modelClass, otherModelClass);
+		if(StringUtils.isTrimmedEmpty(value)) {
+			return "";
+		}
+		return ", " + value;
+	}
+	
 	private String getTargetEntryString(UmlClass modelClass, UmlClass otherModelClass) {
 		UmlDependency dependency = getDependency(modelClass, otherModelClass);
 		if(dependency == null) {
