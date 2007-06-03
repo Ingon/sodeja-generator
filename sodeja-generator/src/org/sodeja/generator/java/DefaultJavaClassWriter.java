@@ -452,6 +452,8 @@ public class DefaultJavaClassWriter {
 			return getTypeText((JavaWildcardType) type);
 		} else if(type instanceof JavaParameterizedType) {
 			return getTypeText((JavaParameterizedType) type);
+		} else if(type instanceof JavaArray) {
+			return getTypeText((JavaArray) type);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -473,6 +475,7 @@ public class DefaultJavaClassWriter {
 		for(JavaClass importClazz : clazz.getImports()) {
 			if(importClazz.getPackage().getFullName().equals(type.getPackage().getFullName()) 
 					&& importClazz.getName().equals(type.getName())) {
+				
 				return type.getName();
 			}
 		}
@@ -507,5 +510,9 @@ public class DefaultJavaClassWriter {
 		}
 		sb.append(">");
 		return sb.toString();
+	}
+	
+	private String getTypeText(JavaArray type) {
+		return getTypeText(type.getType()) + "[]";
 	}
 }

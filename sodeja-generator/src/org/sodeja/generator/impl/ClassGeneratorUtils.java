@@ -3,6 +3,7 @@ package org.sodeja.generator.impl;
 import java.util.List;
 
 import org.sodeja.generator.java.JavaAccessModifier;
+import org.sodeja.generator.java.JavaArray;
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
@@ -13,6 +14,7 @@ import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameterizedType;
 import org.sodeja.generator.java.JavaPrimitiveType;
 import org.sodeja.generator.java.JavaType;
+import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlDataType;
 import org.sodeja.generator.uml.UmlEnumeration;
@@ -48,28 +50,45 @@ public class ClassGeneratorUtils {
 	}
 
 	protected static JavaType getParameterType(UmlParameter parameter) {
-		JavaType baseClass = getJavaClass(parameter.getType());
+		JavaType baseType = getJavaClass(parameter.getType());
 		
 		String value = GeneratorUtils.getMulty(parameter);
 		if(value == null) {
-			return baseClass;
+			return baseType;
 		}
 		
-		JavaParameterizedType type = new JavaParameterizedType(getMultyType(value));
+		return getMultyType(baseType, value);
+	}
+	
+	protected static JavaType getMultyType(JavaType baseType, String value) {
+		if(value.equals("list")) {
+			return getParameteriziedType(baseType, ClassGenerator.LIST_CLASS);
+		} else if(value.equals("collection")) {
+			return getParameteriziedType(baseType, ClassGenerator.COLLECTION_CLASS);
+		} else if(value.equals("set")) {
+			return getParameteriziedType(baseType, ClassGenerator.SET_CLASS);
+		} else if(value.equals("array")) {
+			return new JavaArray(baseType);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	protected static JavaParameterizedType getParameteriziedType(JavaType baseClass, JavaClass realClass) {
+		JavaParameterizedType type = new JavaParameterizedType(realClass);
 		type.getTypeArguments().add(baseClass);
 		return type;
 	}
 	
-	protected static JavaClass getMultyType(String value) {
-		if(value.equals("list")) {
-			return ClassGenerator.LIST_CLASS;
-		} else if(value.equals("collection")) {
-			return ClassGenerator.COLLECTION_CLASS;
-		} else if(value.equals("set")) {
-			return ClassGenerator.SET_CLASS;
-		} else {
-			throw new IllegalArgumentException();
+	protected static JavaType getAttributeType(UmlAttribute attribute) {
+		JavaType baseType = getJavaClass(attribute.getType());
+		
+		String value = GeneratorUtils.getMulty(attribute);
+		if(value == null) {
+			return baseType;
 		}
+
+		return getMultyType(baseType, value);
 	}
 	
 	protected static JavaType getJavaClass(UmlReference<? extends UmlType> modelReference) {

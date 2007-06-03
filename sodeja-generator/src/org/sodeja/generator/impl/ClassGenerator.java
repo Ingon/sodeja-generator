@@ -197,7 +197,7 @@ public class ClassGenerator extends AbstractClassGenerator {
 	}
 
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlAttribute attribute) {
-		JavaType type = ClassGeneratorUtils.getJavaClass(attribute.getType());
+		JavaType type = ClassGeneratorUtils.getAttributeType(attribute);
 		return new JavaField(type, attribute.getName());
 	}
 
