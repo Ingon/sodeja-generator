@@ -2,6 +2,7 @@ package org.sodeja.generator.impl;
 
 import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
+import org.sodeja.generator.uml.UmlAttribute;
 import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlGeneralization;
 import org.sodeja.generator.uml.UmlModel;
@@ -34,6 +35,10 @@ public class GeneratorUtils {
 	public static String getMulty(UmlParameter modelParameter) {
 		return getSetValue(modelParameter, "multy");
 	}
+
+	public static String getMulty(UmlAttribute modelAttribute) {
+		return getSetValue(modelAttribute, "multy");
+	}
 	
 	public static boolean isChild(UmlClass modelClass, String stereotype) {
 		if(CollectionUtils.isEmpty(modelClass.getGeneralizations())) {
@@ -45,15 +50,10 @@ public class GeneratorUtils {
 		UmlGeneralization generalization = ListUtils.first(modelClass.getGeneralizations()).getReferent();
 		UmlClass parentClass = (UmlClass) generalization.getParent().getReferent();
 		return isDomainObject(parentClass, stereotype);
-//		if(modelClass.getParent() == null) {
-//			return false;
-//		}
-//		return isDomainObject(modelClass.getParent().getReferent().getParent().getReferent(), stereotype);
 	}
 	
 	private static boolean isDomainObject(UmlClass modelClass, String stereotype) {
 		return modelClass.hasStereotype(stereotype);
-//		return modelClass.getStereotype().getReferent().getName().equals(stereotype);
 	}
 	
 	public static boolean isParent(UmlModel model, UmlClass modelClass) {

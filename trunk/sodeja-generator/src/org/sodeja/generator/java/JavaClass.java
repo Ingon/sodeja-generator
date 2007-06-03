@@ -23,6 +23,7 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 	private JavaAccessModifier accessModifier = JavaAccessModifier.PUBLIC;
 	private String name;
 	private List<JavaTypeVariable> typeParameters;
+	private boolean isArray;
 	
 	private JavaType parent;
 	private List<JavaType> interfaces;
@@ -36,7 +37,6 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		
 		this.imports = new ArrayList<JavaClass>();
 		this.annotations = new ArrayList<JavaAnnotation>();
-//		this.interfaces = new ArrayList<JavaInterface>();
 		this.interfaces = new ArrayList<JavaType>();
 		this.members = new ArrayList<JavaMember>();
 	}
@@ -76,9 +76,6 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		typeParameters.add(param);
 	}
 
-//	public JavaClass getParent() {
-//		return parent;
-//	}
 	public JavaType getParent() {
 		return parent;
 	}
@@ -101,9 +98,6 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		this.parent = parent;
 	}
 	
-//	public List<JavaInterface> getInterfaces() {
-//		return interfaces;
-//	}
 	public List<JavaType> getInterfaces() {
 		return Collections.unmodifiableList(interfaces);
 	}
@@ -194,6 +188,14 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 		return _package.getFullName().equals("java.lang");
 	}
 	
+	public boolean isArray() {
+		return isArray;
+	}
+
+	public void setArray(boolean isArray) {
+		this.isArray = isArray;
+	}
+
 	public String getFullName() {
 		return String.format("%s.%s", getPackage().getFullName(), getName());
 	}
@@ -270,6 +272,8 @@ public class JavaClass implements JavaType, JavaAnnotatedElement, JavaAccessModi
 			autoImport((JavaWildcardType) type);
 		} else if(type instanceof JavaParameterizedType) {
 			autoImport((JavaParameterizedType) type);
+		} else if(type instanceof JavaArray) {
+			autoImport(((JavaArray) type).getType());
 		} else {
 			throw new IllegalArgumentException();
 		}

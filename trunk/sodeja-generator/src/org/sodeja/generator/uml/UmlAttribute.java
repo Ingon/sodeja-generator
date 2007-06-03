@@ -1,11 +1,20 @@
 package org.sodeja.generator.uml;
 
-public class UmlAttribute extends UmlElement {
+import java.util.ArrayList;
+import java.util.List;
+
+public class UmlAttribute extends UmlElement implements UmlTaggableElement {
 	private UmlVisibility visibility;
 	private UmlOwnerScope scope;
 	
 	private UmlMultiplicityRange range;
 	private UmlReference<? extends UmlType> type;
+	
+	private List<UmlTagValue> tags;
+	
+	public UmlAttribute() {
+		this.tags = new ArrayList<UmlTagValue>();
+	}
 	
 	public UmlVisibility getVisibility() {
 		return visibility;
@@ -33,5 +42,9 @@ public class UmlAttribute extends UmlElement {
 	}
 	public void setType(UmlReference<? extends UmlType> type) {
 		this.type = type;
+	}
+	
+	public List<UmlTagValue> getTags() {
+		return tags;
 	}
 }
