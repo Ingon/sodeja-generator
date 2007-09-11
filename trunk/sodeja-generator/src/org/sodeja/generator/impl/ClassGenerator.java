@@ -8,9 +8,11 @@ import org.sodeja.collections.CollectionUtils;
 import org.sodeja.collections.ListUtils;
 import org.sodeja.generator.GeneratorContext;
 import org.sodeja.generator.java.JavaClass;
+import org.sodeja.generator.java.JavaConstructor;
 import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaInterface;
+import org.sodeja.generator.java.JavaMember;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.java.JavaParameterizedType;
@@ -191,9 +193,20 @@ public class ClassGenerator extends AbstractClassGenerator {
 			
 			JavaField field = createField(domainClass, model, attribute);
 			domainClass.addField(field);
-			domainClass.addMethod(createGetter(field));
-			domainClass.addMethod(createSetter(field));
+			
+			addGetter(domainClass, field, attribute);
+			addSetter(domainClass, field, attribute);
 		}
+	}
+
+	protected void addGetter(JavaClass domainClass, JavaField field, UmlAttribute attribute) {
+		JavaMethod fieldGetter = createGetter(field);
+		domainClass.addMethod(fieldGetter);
+	}
+
+	protected void addSetter(JavaClass domainClass, JavaField field, UmlAttribute attribute) {
+		JavaMethod fieldSetter = createSetter(field);
+		domainClass.addMethod(fieldSetter);
 	}
 
 	protected JavaField createField(JavaClass domainClass, UmlModel model, UmlAttribute attribute) {
@@ -250,15 +263,21 @@ public class ClassGenerator extends AbstractClassGenerator {
 	
 	protected void createOperations(JavaClass domainClass, UmlModel model, UmlType modelType) {
 		for(UmlOperation modelOperation : modelType.getOperations()) {
-			JavaMethod method = createMethod(domainClass, model, modelOperation);
-			if(method != null) {
-				domainClass.addMethod(method);
+			JavaMember method = createMethod(domainClass, model, modelOperation);
+			if(method == null) {
+				continue;
+			}
+			
+			if(method instanceof JavaMethod) {
+				domainClass.addMethod((JavaMethod) method);
+			} else if(method instanceof JavaConstructor) {
+				domainClass.addConstructor((JavaConstructor) method);
 			}
 		}
 	}
 
-	protected JavaMethod createMethod(JavaClass domainClass, UmlModel model, UmlOperation modelOperation) {
-		return ClassGeneratorUtils.createMethod(domainClass, modelOperation);
+	protected JavaMember createMethod(JavaClass domainClass, UmlModel model, UmlOperation modelOperation) {
+		return ClassGeneratorUtils.createOperation(domainClass, modelOperation);
 	}
 
 	protected JavaType createType(JavaClass domainClass, UmlAssociationEnd otherEnd, UmlType otherModelType, UmlDependency dependency) {

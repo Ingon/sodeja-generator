@@ -64,7 +64,7 @@ public class GeneratorUtils {
 		return isParent(model, modelClass) && ! (CollectionUtils.isEmpty(modelClass.getGeneralizations())); //modelClass.getParent() != null
 	}
 	
-	protected static boolean isSet(UmlTaggableElement taggable, String tagName) {
+	public static boolean isSet(UmlTaggableElement taggable, String tagName) {
 		for(UmlTagValue tagValue : taggable.getTags()) {
 			UmlTagDefinition tag = tagValue.getTag().getReferent();
 			if(tag.getName().equals(tagName) && Boolean.parseBoolean(tagValue.getValue())) {

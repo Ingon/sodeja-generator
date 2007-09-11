@@ -162,7 +162,7 @@ public class DefaultJavaClassWriter {
 	
 	private void writeField(JavaField field, PrintWriter out) {
 		writeAnnotations(field, out);
-		out.format("%s%s%s %s %s;", getLevelPrefix(), getAccess(field), getStatic(field), getTypeText(field.getType()), field.getName());
+		out.format("%s%s%s%s %s %s;", getLevelPrefix(), getAccess(field), getStatic(field), getFinal(field), getTypeText(field.getType()), field.getName());
 		out.println();
 		out.println();
 	}
@@ -384,6 +384,10 @@ public class DefaultJavaClassWriter {
 	
 	private String getStatic(JavaField field) {
 		return field.isStatic() ? " static" : "";
+	}
+
+	private String getFinal(JavaField field) {
+		return field.isFinal() ? " final" : "";
 	}
 
 	private String getStatic(JavaMethod method) {
