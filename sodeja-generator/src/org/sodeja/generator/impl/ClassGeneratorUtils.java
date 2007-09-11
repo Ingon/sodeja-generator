@@ -5,9 +5,11 @@ import java.util.List;
 import org.sodeja.generator.java.JavaAccessModifier;
 import org.sodeja.generator.java.JavaArray;
 import org.sodeja.generator.java.JavaClass;
+import org.sodeja.generator.java.JavaConstructor;
 import org.sodeja.generator.java.JavaEnum;
 import org.sodeja.generator.java.JavaField;
 import org.sodeja.generator.java.JavaInterface;
+import org.sodeja.generator.java.JavaMember;
 import org.sodeja.generator.java.JavaMethod;
 import org.sodeja.generator.java.JavaMethodParameter;
 import org.sodeja.generator.java.JavaPackage;
@@ -29,12 +31,43 @@ import org.sodeja.generator.uml.UmlType;
 public class ClassGeneratorUtils {
 	public static void addOperations(List<UmlOperation> modelDaoOperations, JavaClass type) {
 		for(UmlOperation modelOperation : modelDaoOperations) {
-			JavaMethod method = createMethod(type, modelOperation);
-			type.addMethod(method);
+			JavaMember method = createOperation(type, modelOperation);
+			if(method instanceof JavaMethod) {
+				type.addMethod((JavaMethod) method);
+			} else if(method instanceof JavaConstructor) {
+				type.addConstructor((JavaConstructor) method);
+			}
 		}
 	}
 	
-	public static JavaMethod createMethod(JavaClass domainClass, UmlOperation modelOperation) {
+	public static JavaMember createOperation(JavaClass domainClass, UmlOperation modelOperation) {
+		if(modelOperation.getResult() == null) {
+			if(! domainClass.getName().equals(modelOperation.getName())) {
+				throw new IllegalArgumentException("An method with no return type should be only a constructor (match the name of the class)!");
+			}
+			return createConstructor(domainClass, modelOperation);
+		}
+		return createMethod(domainClass, modelOperation);
+	}
+	
+	private static JavaMember createConstructor(JavaClass domainClass, UmlOperation modelOperation) {
+//		JavaMethod method = new JavaMethod(resultType, modelOperation.getName());
+		JavaConstructor method = new JavaConstructor();
+		method.setAccessModifier(JavaAccessModifier.PUBLIC);
+		method.setCustom(modelOperation.getId());
+		if(modelOperation.getScope() == UmlOwnerScope.CLASSIFIER) {
+			throw new IllegalArgumentException("Constructor cannot be marked as static!");
+		}
+		
+		for(UmlParameter modelParam : modelOperation.getParameters()) {
+			JavaType paramType = getParameterType(modelParam);
+			method.addParameter(new JavaMethodParameter(paramType, modelParam.getName()));
+		}
+		
+		return method;
+	}
+
+	private static JavaMember createMethod(JavaClass domainClass, UmlOperation modelOperation) {
 		JavaType resultType = getParameterType(modelOperation.getResult());
 		JavaMethod method = new JavaMethod(resultType, modelOperation.getName());
 		method.setAccessModifier(JavaAccessModifier.PUBLIC);

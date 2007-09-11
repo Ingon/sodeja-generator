@@ -7,6 +7,13 @@ import org.sodeja.generator.uml.UmlClass;
 import org.sodeja.generator.uml.UmlModel;
 
 public class HibernateConfigGenerator extends ConfigurationFileDomainGenerator {
+	
+	private String dialect;
+	
+	public String getDialect() {
+		return dialect;
+	}
+	
 	@Override
 	protected void generateBegin(GeneratorContext ctx, PrintWriter writer, UmlModel model) {
 		writer.append("<!DOCTYPE hibernate-configuration PUBLIC\r\n");
@@ -15,7 +22,7 @@ public class HibernateConfigGenerator extends ConfigurationFileDomainGenerator {
 		
 		writer.append("<hibernate-configuration>\r\n");
 		writer.append("    <session-factory>\r\n");
-		writer.append("        <property name=\"dialect\">org.hibernate.dialect.PostgreSQLDialect</property>\r\n");
+		writer.format("        <property name=\"dialect\">%s</property>\r\n", dialect);
 	}
 
 	@Override

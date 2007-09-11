@@ -2,7 +2,7 @@ package org.sodeja.generator.impl;
 
 import org.sodeja.generator.java.JavaClass;
 import org.sodeja.generator.java.JavaField;
-import org.sodeja.generator.java.JavaMethod;
+import org.sodeja.generator.java.JavaMember;
 import org.sodeja.generator.java.JavaPackage;
 import org.sodeja.generator.uml.UmlAggregationType;
 import org.sodeja.generator.uml.UmlAssociation;
@@ -170,7 +170,7 @@ public class HibernateClassGenerator extends ClassGenerator {
 	}
 	
 	@Override
-	protected JavaMethod createMethod(JavaClass domainClass, UmlModel model, UmlOperation modelOperation) {
+	protected JavaMember createMethod(JavaClass domainClass, UmlModel model, UmlOperation modelOperation) {
 		if(GeneratorUtils.isDao(modelOperation)) {
 			return null;
 		}
