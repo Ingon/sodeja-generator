@@ -338,13 +338,20 @@ public class DefaultJavaClassWriter {
 		StringBuilder sb = new StringBuilder();
 		for(Iterator<JavaMethodParameter> ite = parameters.iterator();ite.hasNext();) {
 			JavaMethodParameter param = ite.next();
-			sb.append(String.format("%s %s", getTypeText(param.getType()), param.getName()));
+			sb.append(String.format("%s%s %s", getFinalText(param), getTypeText(param.getType()), param.getName()));
 			if(ite.hasNext()) {
 				sb.append(", ");
 			}
 		}
 		
 		return sb.toString();
+	}
+
+	private String getFinalText(JavaMethodParameter param) {
+		if(param.isFinal()) {
+			return "final ";
+		}
+		return "";
 	}
 
 	private String getThrows(JavaConstructor constructor) {
