@@ -1,0 +1,1 @@
+Model Driven Software Development(MDSD) generator. Works primary with ArgoUML. Genration is done from Java directly. Currently there are abstractions about generating Java code and Spring XMLs. See GeneratorDocumentation for what exactly is supported.
